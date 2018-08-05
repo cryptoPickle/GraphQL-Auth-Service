@@ -23,7 +23,7 @@ class LocalStrategy extends Auth {
     }));
   }
   session(){
-    return passport.session()
+    return passport.session();
   }
 };
 
