@@ -4,7 +4,8 @@ import logger from './middlewares/basiclogger';
 import passport from 'passport';
 import Auth from './Services/Auth/Strategies/Auth';
 import {GoogleStrategy, FacebookStrategy} from './Services/Auth';
-
+import userTokenValidation from './middlewares/token';
+import config from './config'
 
 
 
@@ -28,7 +29,10 @@ facebook.deserializeUser();
 server.get('/facebook', facebook.authenticate());
 server.get('/facebook/return', facebook.returnAuthenticate());
 server.get('/google', google.authenticate());
+
 server.get('/google/return', google.returnAuthenticate());
+
+server.use(userTokenValidation(config.jwtAccessToken));
 
 server.use('/', (req,res) => res.write('dumb root for now '))
 

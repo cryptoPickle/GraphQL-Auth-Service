@@ -1,0 +1,15 @@
+type Token {
+  id: ID!
+  userId: ID!
+  googleAccessToken: String!
+  facebookAccessToken: String!
+  jwtRefreshToken: String!
+}
+
+
+type Query { 
+  getTokenByUserId(userId: ID!) : Token!
+  getTokenByTokenId(tokenId: ID!) : Token!
+}
+
+

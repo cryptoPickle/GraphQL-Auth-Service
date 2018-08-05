@@ -9,7 +9,9 @@ const config = {
   facebookAppSecret: process.env.FACEBOOK_APP_SECRET,
   googleClientID: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  jwtSecret: process.env.JWT_SECRET
+  jwtSecret: process.env.JWT_SECRET,
+  jwtAccessToken: process.env.JWT_ACCESS_TOKEN,
+  jwtRefreshToken: process.env.JWT_REFRESH_TOKEN
 };
 
 export default config;

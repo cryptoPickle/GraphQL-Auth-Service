@@ -17,6 +17,7 @@ class GoogleStrategy extends Auth {
       clientSecret: this.clientSecret,
       callbackURL: this.callbackURL
     },(accessToken, refreshToken, profile, cb) => {
+      console.log({accessToken, refreshToken, profile})
       this.model.findOrCreate({googleId: profile.id}, (err, user) => {
         return cb(err,user)
       })
