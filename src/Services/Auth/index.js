@@ -1,11 +1,12 @@
-import authWithFacebook from './Strategies/FacebookStrategy';
-import authWithGoogle from './Strategies/GoogleStrategy';
+import FacebookStrategy from './Strategies/FacebookStrategy';
+import GoogleStrategy from './Strategies/GoogleStrategy';
 import authWithJWT from './Strategies/JWTStrategy';
 import authWithLocal from './Strategies/LocalStrategy';
 
+
 export {
-  authWithFacebook,
-  authWithGoogle,
+  FacebookStrategy,
+  GoogleStrategy,
   authWithJWT,
-  authWithLocal
+  authWithLocal,
 };

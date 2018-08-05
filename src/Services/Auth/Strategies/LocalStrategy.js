@@ -9,7 +9,11 @@ class LocalStrategy extends Auth {
     this._localStrategy()
   }
   _localStrategy(){
-    passport.use(new Strategy((username, password, done) => {
+    passport.use(new Strategy({
+      usernameField: 'email',
+      passportField: 'passport',
+      session: false
+    },(username, password, done) => {
       this.model.findOne({username}, (err,user) => {
         if (err) return done(err);
         if(!user) return done(null, false, {message: 'Invalid Credentials'});

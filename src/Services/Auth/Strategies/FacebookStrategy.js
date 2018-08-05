@@ -1,20 +1,25 @@
 import passport from 'passport';
 import {Strategy} from 'passport-facebook';
 import Auth from './Auth';
+import config from '../../../config'
+
 
 const defaultPermissions = ['user_friends', 'email','user_birthday','user_photos']
 
 class FacebookStrategy extends Auth {
   constructor(clientID, clientSecret,callbackURL,permissions){
     super();
-    this.clientID = clientID || process.env.FACEBOOK_CLIENT_ID;
-    this.clientSecret = clientSecret || process.env.FACEBOOK_APP_SECRET;
-    this.callbackURL = callbackURL;
+    
+    this.clientID = clientID || config.facebookClientID;
+    this.clientSecret = clientSecret || config.facebookAppSecret;
+    this.callbackURL = callbackURL || 'http://localhost:9090/facebook/return';
     this.permissions = permissions || defaultPermissions;
-    this._facebookStrategy();
+    this._strategy();
   }
-  _facebookStrategy(){
-    passport.use(new Strategy({
+  
+  
+  _strategy(){
+   passport.use(new Strategy({
       clientID: this.clientID,
       clientSecret: this.clientSecret,
       callbackURL: this.callbackURL,
@@ -25,11 +30,18 @@ class FacebookStrategy extends Auth {
       })
     }));
   }
-  authenticate(){
+  
+  
+  returnAuthenticate(){
     return passport.authenticate('facebook', {authType: 'rerequest', scope: this.permissions})
+  }
+  
+  
+  
+  authenticate(){
+    return passport.authenticate('facebook');
   }
 }
 
 
-export default (clientID, clientSecret,callbackURL,permissions) => 
-  new FacebookStrategy(clientID, clientSecret,callbackURL,permissions)
+export default FacebookStrategy;

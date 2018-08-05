@@ -1,11 +1,34 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import logger from './middlewares/basiclogger'
+import logger from './middlewares/basiclogger';
+import passport from 'passport';
+import Auth from './Services/Auth/Strategies/Auth';
+import {GoogleStrategy, FacebookStrategy} from './Services/Auth';
+
+
+
+
+
 
 
 const server = express();
+server.use(bodyParser.json())
 server.use(logger);
 
+const facebook = new FacebookStrategy();
+const google = new GoogleStrategy();
+
+server.use(passport.initialize());
+server.use(passport.session());
+
+facebook.serializeUser();
+facebook.deserializeUser();
+
+
+server.get('/facebook', facebook.authenticate());
+server.get('/facebook/return', facebook.returnAuthenticate());
+server.get('/google', google.authenticate());
+server.get('/google/return', google.returnAuthenticate());
 
 server.use('/', (req,res) => res.write('dumb root for now '))
 

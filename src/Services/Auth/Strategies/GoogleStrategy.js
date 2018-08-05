@@ -1,17 +1,17 @@
 import passport from 'passport';
 import {Strategy} from 'passport-google-oauth20';
 import Auth from './Auth';
-
+import config from '../../../config'
 
 class GoogleStrategy extends Auth {
   constructor(clientID,clientSecret,callbackURL){
     super();
-    this.clientID = clientID || process.env.GOOGLE_CLIENT_ID;
-    this.clientSecret = clientSecret || process.env.GOOGLE_CLIENT_SECRET;
-    this.callbackURL = callbackURL;
-    this._googleStategy();
+    this.clientID = clientID || config.googleClientID;
+    this.clientSecret = clientSecret || config.googleClientSecret;
+    this.callbackURL = callbackURL || 'http://127.0.0.1:9090/google/return';
+    this._stategy();
   }
-  _googleStategy(){
+  _stategy(){
     passport.use(new Strategy({
       clientID: this.clientID,
       clientSecret: this.clientSecret,
@@ -23,10 +23,12 @@ class GoogleStrategy extends Auth {
     }));
   }
   authenticate(){
-    return passport.authenticate('google',  { scope: ['profile'] });
+    return passport.authenticate('google',  { scope: ['openid', 'email' ,'profile'] });
+  }
+  returnAuthenticate() {
+    return passport.authenticate('google');
   }
 }
 
 
-export default (clientID,clientSecret,callbackURL) => 
-  new GoogleStrategy(clientID,clientSecret,callbackURL)
+export default GoogleStrategy;
