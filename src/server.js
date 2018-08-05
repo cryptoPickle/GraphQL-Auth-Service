@@ -6,8 +6,8 @@ import Auth from './Services/Auth/Strategies/Auth';
 import {GoogleStrategy, FacebookStrategy} from './Services/Auth';
 import userTokenValidation from './middlewares/token';
 import config from './config'
-
-
+import graphqlHttp from 'express-graphql';
+import schema from './graphql'
 
 
 
@@ -26,15 +26,21 @@ facebook.serializeUser();
 facebook.deserializeUser();
 
 
-server.get('/facebook', facebook.authenticate());
-server.get('/facebook/return', facebook.returnAuthenticate());
-server.get('/google', google.authenticate());
+server.use('/facebook', facebook.authenticate());
+server.use('/facebook/return', facebook.returnAuthenticate());
+server.use('/google', google.authenticate());
 
-server.get('/google/return', google.returnAuthenticate());
+server.use('/google/return', google.returnAuthenticate());
 
 server.use(userTokenValidation(config.jwtAccessToken));
 
-server.use('/', (req,res) => res.write('dumb root for now '))
+server.use('/graphql',graphqlHttp((req) => {
+  return {
+    graphiql: true,
+    schema,
+    context: {}
+  }
+}))
 
 server.listen(9090, (err) => {
   if(err) {console.log(err)}

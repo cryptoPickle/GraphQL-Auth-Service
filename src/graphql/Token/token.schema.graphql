@@ -7,9 +7,3 @@ type Token {
 }
 
 
-type Query { 
-  getTokenByUserId(userId: ID!) : Token!
-  getTokenByTokenId(tokenId: ID!) : Token!
-}
-
-
