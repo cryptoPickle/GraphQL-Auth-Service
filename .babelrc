@@ -1,6 +1,9 @@
 {
+  "retainLines": true,
   "presets": [
-    "env",
+    ["env", {
+      "targets": {"node": "current"}
+    }],
     "stage-0"
   ]
 }

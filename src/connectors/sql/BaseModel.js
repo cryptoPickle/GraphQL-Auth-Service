@@ -1,11 +1,11 @@
 import {Model, ValidationError} from 'objection';
-
+import moment from 'moment';
 
 class BaseModel extends Model {
   static timestamp = true;
 
   $beforeInsert(){
-    this._addTimestamp('create')
+    this._addTimeStamp('create')
   }
 
   $beforeUpdate(){
@@ -15,14 +15,15 @@ class BaseModel extends Model {
     if(this.constructor.timestamp){
       switch(action){
         case 'create':
-          this.created_at = new Date.now();
+          this.created_at =  moment().format('x');
           break;
         case 'update':
-          this.updateted_at = new Date.now();
+          this.updated_at =  moment().format('x');
           break;  
       }
     }
   }
 }
+
 
 export default BaseModel;

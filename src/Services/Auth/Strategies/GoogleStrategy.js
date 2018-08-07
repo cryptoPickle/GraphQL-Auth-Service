@@ -11,6 +11,8 @@ class GoogleStrategy extends Auth {
     this.callbackURL = callbackURL || 'http://127.0.0.1:9090/google/return';
     this._stategy();
   }
+
+
   _stategy(){
     passport.use(new Strategy({
       clientID: this.clientID,
@@ -23,13 +25,19 @@ class GoogleStrategy extends Auth {
       })
     }));
   }
+
+
   authenticate(){
     return passport.authenticate('google',  { scope: ['openid', 'email' ,'profile'] });
   }
+
+
   returnAuthenticate() {
-    return passport.authenticate('google');
+    return passport.authenticate('google', {failureRedirect: '/google'});
   }
 }
 
 
 export default GoogleStrategy;
+
+//MwAJFmFJ2Shutv2yZHyfC2B97O0oECRfUxY1nA071YqRQf4fLPxku37KeSg3koQF0Y61GdM6KNvN9-MPNqkWUZg

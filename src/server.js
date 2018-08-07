@@ -20,19 +20,24 @@ const facebook = new FacebookStrategy();
 const google = new GoogleStrategy();
 
 server.use(passport.initialize());
-server.use(passport.session());
-
-facebook.serializeUser();
-facebook.deserializeUser();
 
 
-server.use('/facebook', facebook.authenticate());
-server.use('/facebook/return', facebook.returnAuthenticate());
-server.use('/google', google.authenticate());
 
-server.use('/google/return', google.returnAuthenticate());
 
 server.use(userTokenValidation(config.jwtAccessToken));
+
+server.get('/facebook/return', facebook.returnAuthenticate(), (req, res) => {
+  const token = req.user.tokens;
+  res.json({token})
+});
+server.get('/facebook', facebook.authenticate());
+server.use('/google', google.authenticate());
+
+server.use('/google/return', google.returnAuthenticate(), (req,res) => {
+  res.redirect('/graphql')
+});
+
+
 
 server.use('/graphql',graphqlHttp((req) => {
   return {
