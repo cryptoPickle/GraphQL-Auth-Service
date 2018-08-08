@@ -1,14 +1,11 @@
 import {Router} from 'express';
 import {GoogleStrategy, FacebookStrategy} from '../../Services/Auth';
-import jwt from 'jsonwebtoken';
+import {generateResponse} from '../utils'
+
 
 const facebook = new FacebookStrategy();
 const google = new GoogleStrategy();
 
-const generateResponse = (req, res) => {
-  const user = req.user;
-  res.json({user})
-}
 
 
 const authRoutes = ({config}) => {
@@ -26,10 +23,8 @@ const authRoutes = ({config}) => {
 
   // v1/auth/google/return ::::::::::::::::::::::::::::::::::::: Google CallBack
 
-  router.get('/google/return', google.returnAuthenticate(), (req,res) => {
-    const token = req.user.tokens;
-    res.json({token})
-  });
+  router.get('/google/return', google.returnAuthenticate(),
+    (req,res) => generateResponse(req,res) );
 
   // v1/auth/google ::::::::::::::::::::::::::::::::::::::::::::::: Google Login
 

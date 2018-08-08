@@ -87,12 +87,16 @@ class Auth {
       const jwtToken = new Token();
 
 
-      user.tokens =  await jwtToken.createTokens(user);
-      user.isCompleted = true;
+      const [jwt_access_token, jwt_refresh_token] = await jwtToken.createTokens(user);
 
+
+      user.accessToken = jwt_access_token;
+      user.refreshToken = jwt_refresh_token;
+      user.isCompleted = true;
+      debugger;
       await this.tokenmodel.findOrUpdate(user.id,{
-        jwt_access_token: user.tokens[0],
-        jwt_refresh_token: user.tokens[1],
+        jwt_access_token,
+        jwt_refresh_token,
         [this._propertyNameDecider('token',type)]: accessToken,
       });
 

@@ -6,10 +6,10 @@ exports.up = function(knex, Promise) {
     tbl.uuid('user_id').notNullable().unique()
       .references('id').inTable('users').onDelete('CASCADE');
 
-    tbl.string('google_access_token').nullable();
-    tbl.string('facebook_access_token').nullable();
-    tbl.string('jwt_access_token').notNullable()
-    tbl.string('jwt_refresh_token').notNullable();
+    tbl.string('google_access_token',600).nullable();
+    tbl.string('facebook_access_token',600).nullable();
+    tbl.string('jwt_access_token',600).notNullable()
+    tbl.string('jwt_refresh_token',600).notNullable();
 
     tbl.float('created_at').notNullable();
     tbl.float('updated_at').nullable();
