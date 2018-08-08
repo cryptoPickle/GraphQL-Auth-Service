@@ -32,50 +32,13 @@ class FacebookStrategy extends Auth {
     },async (accessToken, refreshToken, profile, cb) => {
 
      const {id, name:{familyName, givenName}, email} = profile;
+     const userinfo = { id, name: givenName, surname: familyName, email: email, accessToken };
 
-      const userinfo = {
-        facebook_profile_id: id,
-        facebook_verified: true,
-        name: givenName,
-        surname: familyName,
-        email: email,
-      };
-      this._createUserEntry(id, userinfo, accessToken, cb)
+     await this._createUserEntry(userinfo, 'facebook', cb)
 
    }));
   }
 
-  async _createToken(fields, user, facebookToken, cb){
-    if(fields) {
-      const accessToken = new Token();
-
-      user.tokens =  await accessToken.createTokens(user);
-
-      await this.tokenmodel.findOrUpdate(user.id, {
-        jwt_access_token: user.tokens[0],
-        jwt_refresh_token: user.tokens[1],
-        facebook_access_token: facebookToken
-      });
-
-      return cb(null, user)
-    }
-
-    return cb('Please fill profile details')
-  }
-
-  async _createUserEntry(facebook_profile_id, userinfo, facebookToken, cb){
-
-    const returnedUser = await this.usermodel.findOrCreate({
-      facebook_profile_id
-    }, userinfo)
-
-    const user = returnedUser[0]
-
-    const isAllFieldsCompleted = Object.values(user).every(item => item);
-
-    await this._createToken(isAllFieldsCompleted, user, facebookToken, cb)
-
-  }
   
   returnAuthenticate(){
     return passport.authenticate('facebook', {

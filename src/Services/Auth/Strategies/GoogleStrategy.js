@@ -18,22 +18,33 @@ class GoogleStrategy extends Auth {
       clientID: this.clientID,
       clientSecret: this.clientSecret,
       callbackURL: this.callbackURL
-    },(accessToken, refreshToken, profile, cb) => {
-      console.log({accessToken, refreshToken, profile})
-      this.model.findOrCreate({googleId: profile.id}, (err, user) => {
-        return cb(err,user)
-      })
+    }, async(accessToken, refreshToken, profile, cb) => {
+
+
+      const {id, name: {familyName, givenName}, emails} = profile;
+      console.log(profile)
+      //const userinfo = { id, name: givenName, surname: familyName, email: email, accessToken };
+
+      const userInfo = {
+        id,
+        name: givenName,
+        surname: familyName,
+        email: emails[0].value,
+        accessToken
+      };
+
+      await this._createUserEntry(userInfo, 'google', cb)
     }));
   }
 
 
   authenticate(){
-    return passport.authenticate('google',  { scope: ['openid', 'email' ,'profile'] });
+    return passport.authenticate('google',  {session: false, scope: ['openid', 'email' ,'profile'] });
   }
 
 
   returnAuthenticate() {
-    return passport.authenticate('google', {failureRedirect: '/google'});
+    return passport.authenticate('google', {session: false, failureRedirect: '/google'});
   }
 }
 

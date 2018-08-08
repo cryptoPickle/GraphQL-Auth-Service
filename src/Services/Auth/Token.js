@@ -1,13 +1,12 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import Auth from './Strategies/Auth';
 import config from '../../config'
 
 /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
 
-class Token extends Auth { 
-  constructor(accessToken, refreshToken){
-    super()
+class Token  {
+  constructor(model, accessToken, refreshToken){
+
     this.accessToken = accessToken || config.jwtAccessToken;
     this.refreshToken = refreshToken || config.jwtRefreshToken;
   }

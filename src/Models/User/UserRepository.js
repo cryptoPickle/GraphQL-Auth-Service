@@ -1,6 +1,16 @@
 import UserModel from './UserModel';
 
 
+const propertyNameDecider = (type) => {
+  switch(type){
+    case 'facebook':
+      return 'facebook_profile_id';
+    case 'google':
+      return 'google_profile_id';
+  }
+}
+
+
 export default {
   async addUser(userInfo){
     return await UserModel.query().insert(userInfo)
@@ -11,16 +21,40 @@ export default {
   async getUserById(id){
     return await UserModel.query().where('id', '=', id)
   },
+
+
+
   async findOrCreate(model, userinfo, type){
 
-    const returnedFields = ['id','email', 'name', 'surname','birthday', 'gender']
+    const returnedFields = ['id','email', 'name', 'surname'];
+    const id = {[propertyNameDecider(type)]:model[propertyNameDecider(type)]}
+
 
     try{
-      const fetched = await UserModel.query().where(model).select(returnedFields);
+
+      const fetched = await UserModel.query().where(id)
+        .orWhere({email:model.email})
+        .select(returnedFields);
+
       if(fetched.length === 0){
         await UserModel.query().insert(userinfo);
         return await UserModel.query().where(model).select(returnedFields);
+      }
 
+      if(userinfo.email && fetched[0].email === userinfo.email){
+
+        switch(type){
+
+          case 'facebook':
+            const {facebook_profile_id, facebook_verified} = userinfo;
+            await UserModel.query().patch({facebook_profile_id, facebook_verified})
+            return await UserModel.query().where(model).select(returnedFields);
+
+          case 'google':
+            const {google_profile_id, google_verified} = userinfo;
+            await UserModel.query().patch({google_profile_id, google_verified})
+            return await UserModel.query().where(model).select(returnedFields);
+        }
       }
 
       return fetched;
