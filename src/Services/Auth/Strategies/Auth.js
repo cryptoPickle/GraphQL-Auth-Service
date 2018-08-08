@@ -71,7 +71,6 @@ class Auth {
       email
     }, checkedUser, type);
 
-    debugger;
     const user = returnedUser[0];
 
     const fieldCheck = this._checkFields(user);
@@ -89,10 +88,12 @@ class Auth {
 
 
       user.tokens =  await jwtToken.createTokens(user);
+      user.isCompleted = true;
+
       await this.tokenmodel.findOrUpdate(user.id,{
         jwt_access_token: user.tokens[0],
         jwt_refresh_token: user.tokens[1],
-        [this._propertyNameDecider('token',type)]: accessToken
+        [this._propertyNameDecider('token',type)]: accessToken,
       });
 
       return cb(null, user)

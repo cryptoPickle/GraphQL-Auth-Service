@@ -12,20 +12,17 @@ import routes from './Routes'
 
 
 const server = express();
-server.use(bodyParser.json())
+
+server.use(bodyParser.json());
+
 server.use(logger(process.env.NODE_ENV));
-
-
 
 server.use(passport.initialize());
 
 
-
+server.use('/v1', routes);
 
 server.use(userTokenValidation(config.jwtAccessToken));
-
-
-server.use('/v1', routes);
 
 server.use('/graphql',graphqlHttp((req) => {
   return {
@@ -35,9 +32,10 @@ server.use('/graphql',graphqlHttp((req) => {
       req
     }
   }
-}))
+}));
 
 server.listen(config.apiPort, (err) => {
   if(err) {console.log(err)}
   else {console.log(`🚀Server is ready on ${config.apiPort} 🛸`)};
 });
+
