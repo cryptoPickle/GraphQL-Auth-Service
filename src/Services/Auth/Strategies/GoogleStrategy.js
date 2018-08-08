@@ -23,8 +23,7 @@ class GoogleStrategy extends Auth {
 
       const {id, name: {familyName, givenName}, emails} = profile;
       console.log(profile)
-      //const userinfo = { id, name: givenName, surname: familyName, email: email, accessToken };
-
+      
       const userInfo = {
         id,
         name: givenName,

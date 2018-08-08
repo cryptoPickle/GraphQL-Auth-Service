@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d62abba1-4b94-4295-9cf3-c8d7cb8a678b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/playground.js" beforeDir="false" afterPath="$PROJECT_DIR$/playground.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Models/User/UserRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/User/UserRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/Auth/Strategies/Auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/Auth/Strategies/Auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/Auth/Strategies/FacebookStrategy.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/Auth/Strategies/FacebookStrategy.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Services/Auth/Strategies/GoogleStrategy.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/Auth/Strategies/GoogleStrategy.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Services/Auth/Token.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/Auth/Token.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -32,6 +30,7 @@
         <counts>
           <entry key="babelrc" value="1" />
           <entry key="env" value="3" />
+          <entry key="gitignore" value="1" />
           <entry key="js" value="90" />
           <entry key="json" value="2" />
         </counts>
@@ -41,13 +40,15 @@
           <entry key=".env file" value="3" />
           <entry key="JSON" value="3" />
           <entry key="JavaScript" value="90" />
+          <entry key="PLAIN_TEXT" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="babelrc" value="4" />
           <entry key="env" value="11" />
-          <entry key="js" value="8575" />
+          <entry key="gitignore" value="7" />
+          <entry key="js" value="8805" />
           <entry key="json" value="4" />
         </counts>
       </usages-collector>
@@ -55,7 +56,8 @@
         <counts>
           <entry key=".env file" value="11" />
           <entry key="JSON" value="8" />
-          <entry key="JavaScript" value="8575" />
+          <entry key="JavaScript" value="8805" />
+          <entry key="PLAIN_TEXT" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts">
@@ -67,11 +69,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Services/Auth/Strategies/GoogleStrategy.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="659">
-              <caret line="46" column="60" selection-start-line="46" selection-start-column="60" selection-end-line="46" selection-end-column="60" />
+            <state relative-caret-position="278">
+              <caret line="25" column="6" selection-start-line="25" selection-start-column="6" selection-end-line="25" selection-end-column="6" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
@@ -106,8 +108,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Models/User/UserRepository.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="440">
-              <caret line="35" column="37" lean-forward="true" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
+            <state relative-caret-position="430">
+              <caret line="30" lean-forward="true" selection-start-line="30" selection-end-line="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="6" column="5" selection-start-line="6" selection-start-column="5" selection-end-line="6" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -125,6 +136,7 @@
       <find>googleprofile_id</find>
       <find>findOrCreate</find>
       <find>undefined</find>
+      <find>debu</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -153,8 +165,9 @@
         <option value="$PROJECT_DIR$/src/Services/Auth/Token.js" />
         <option value="$PROJECT_DIR$/src/Services/Auth/Strategies/FacebookStrategy.js" />
         <option value="$PROJECT_DIR$/src/Services/Auth/Strategies/Auth.js" />
-        <option value="$PROJECT_DIR$/src/Models/User/UserRepository.js" />
         <option value="$PROJECT_DIR$/src/Services/Auth/Strategies/GoogleStrategy.js" />
+        <option value="$PROJECT_DIR$/src/Models/User/UserRepository.js" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -295,18 +308,18 @@
       <option name="presentableId" value="Default" />
       <updated>1533586577024</updated>
       <workItem from="1533586581036" duration="35888000" />
-      <workItem from="1533684045742" duration="13797000" />
+      <workItem from="1533684045742" duration="14274000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="49685000" />
+    <option name="totallyTimeSpent" value="50162000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1280" height="1373" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22160445" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22160445" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="npm" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -320,7 +333,7 @@
       <window_info anchor="bottom" id="Docker" order="7" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="GraphQL" order="9" weight="0.3299532" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.33021078" />
+      <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.33021078" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="bottom" id="Quokka" order="12" weight="0.32943013" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -522,13 +535,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Models/User/UserRepository.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="35" column="37" lean-forward="true" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Services/Auth/Strategies/Auth.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
@@ -551,11 +557,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Services/Auth/Strategies/GoogleStrategy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="659">
-          <caret line="46" column="60" selection-start-line="46" selection-start-column="60" selection-end-line="46" selection-end-column="60" />
+        <state relative-caret-position="278">
+          <caret line="25" column="6" selection-start-line="25" selection-start-column="6" selection-end-line="25" selection-end-column="6" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Models/User/UserRepository.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="430">
+          <caret line="30" lean-forward="true" selection-start-line="30" selection-end-line="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="5" selection-start-line="6" selection-start-column="5" selection-end-line="6" selection-end-column="5" />
         </state>
       </provider>
     </entry>

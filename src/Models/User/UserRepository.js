@@ -23,6 +23,11 @@ export default {
   },
 
 
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// Checks id from outh and email if oauth does not exists but email, updates the
+// user with the oauth logins. If doesnt existst creates a new entry in database
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
   async findOrCreate(model, userinfo, type){
 
