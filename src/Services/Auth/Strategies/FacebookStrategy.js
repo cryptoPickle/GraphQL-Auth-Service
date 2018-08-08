@@ -16,7 +16,7 @@ class FacebookStrategy extends Auth {
     
     this.clientID = clientID || config.facebookClientID;
     this.clientSecret = clientSecret || config.facebookAppSecret;
-    this.callbackURL = callbackURL || 'http://localhost:9090/facebook/return';
+    this.callbackURL = callbackURL || 'http://localhost:9090/v1/auth/facebook/return';
     this.permissions = permissions || defaultPermissions;
     this._strategy();
   }

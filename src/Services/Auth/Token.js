@@ -13,9 +13,9 @@ class Token  {
 
   /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Creating Tokens
   async createTokens(user){
-    const {id} = user;
-    const accessToken = jwt.sign({user:id}, this.accessToken, {expiresIn:'1m'});
-    const refreshToken = jwt.sign({user:id}, this.refreshToken, {expiresIn: '7d'});
+    ;
+    const accessToken = jwt.sign({user}, this.accessToken, {expiresIn:'1m'});
+    const refreshToken = jwt.sign({user}, this.refreshToken, {expiresIn: '7d'});
     return Promise.all([accessToken, refreshToken]);
   }
 

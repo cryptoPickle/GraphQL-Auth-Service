@@ -8,7 +8,7 @@ class GoogleStrategy extends Auth {
     super();
     this.clientID = clientID || config.googleClientID;
     this.clientSecret = clientSecret || config.googleClientSecret;
-    this.callbackURL = callbackURL || 'http://127.0.0.1:9090/google/return';
+    this.callbackURL = callbackURL || 'http://127.0.0.1:9090/v1/auth/google/return';
     this._stategy();
   }
 

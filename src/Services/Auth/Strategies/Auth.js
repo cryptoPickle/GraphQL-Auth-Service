@@ -71,7 +71,7 @@ class Auth {
       email
     }, checkedUser, type);
 
-
+    debugger;
     const user = returnedUser[0];
 
     const fieldCheck = this._checkFields(user);
