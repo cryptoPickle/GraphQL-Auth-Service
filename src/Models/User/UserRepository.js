@@ -38,7 +38,7 @@ export default {
     try{
 
       const fetched = await UserModel.query().where(id)
-        .orWhere({email:model.email})
+        .orWhere((model.email) ? {email:model.email}: false)
         .select(returnedFields);
 
       if(fetched.length === 0){

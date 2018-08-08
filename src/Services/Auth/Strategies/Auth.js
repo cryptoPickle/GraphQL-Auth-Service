@@ -7,19 +7,9 @@ import Token from '../Token';
 
 
 class Auth {
-  constructor(model, req, res, next){
+  constructor(model){
     this.usermodel = model || userRepository;
     this.tokenmodel = model || tokenRepository;
-  }
-  serializeUser(){
-    return passport.serializeUser((user, done) => {
-      done(null, user)
-    })
-  }
-  deserializeUser(){
-    return passport.deserializeUser((obj, done) => {
-      done(null, obj);
-    })
   }
 
   // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Internal Methods
@@ -50,9 +40,21 @@ class Auth {
     }
   }
 
+  _checkFields(obj){
+    return Object.values(obj).every(item => item);
+  }
+
+  _checkUserValidUser(user) {
+
+    const check = this._checkFields(user);
+    if(check) return {...user, isCompleted: true};
+    return user;
+  }
+
   async _createUserEntry(userinfo, type, cb){
 
     const {id,accessToken,name,surname,email} = userinfo;
+
 
     const userObj = {
       [this._propertyNameDecider('profile', type)]: id,
@@ -60,17 +62,19 @@ class Auth {
       name,
       surname,
       email
-    }
+    };
+
+    const checkedUser = this._checkUserValidUser(userObj, type)
 
     const returnedUser = await this.usermodel.findOrCreate({
       [this._propertyNameDecider('profile', type)] : id,
       email
-    }, userObj, type);
+    }, checkedUser, type);
 
 
     const user = returnedUser[0];
 
-    const fieldCheck = Object.values(user).every(item => item);
+    const fieldCheck = this._checkFields(user);
 
     await this._createToken({fieldCheck, user, accessToken, type}, cb)
   };

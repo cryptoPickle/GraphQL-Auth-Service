@@ -22,8 +22,7 @@ class GoogleStrategy extends Auth {
 
 
       const {id, name: {familyName, givenName}, emails} = profile;
-      console.log(profile)
-      
+
       const userInfo = {
         id,
         name: givenName,

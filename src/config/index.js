@@ -11,7 +11,8 @@ const config = {
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
   jwtSecret: process.env.JWT_SECRET,
   jwtAccessToken: process.env.JWT_ACCESS_TOKEN,
-  jwtRefreshToken: process.env.JWT_REFRESH_TOKEN
+  jwtRefreshToken: process.env.JWT_REFRESH_TOKEN,
+  apiPort: process.env.API_PORT
 };
 
 export default config;

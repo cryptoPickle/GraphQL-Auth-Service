@@ -1,8 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import logger from './middlewares/basiclogger';
+import logger from './Services/Logger';
 import passport from 'passport';
-import Auth from './Services/Auth/Strategies/Auth';
 import {GoogleStrategy, FacebookStrategy} from './Services/Auth';
 import userTokenValidation from './middlewares/token';
 import config from './config'
@@ -14,7 +13,7 @@ import schema from './graphql'
 
 const server = express();
 server.use(bodyParser.json())
-server.use(logger);
+server.use(logger(process.env.NODE_ENV));
 
 const facebook = new FacebookStrategy();
 const google = new GoogleStrategy();
@@ -31,11 +30,15 @@ server.get('/facebook/return', facebook.returnAuthenticate(), (req, res) => {
   res.json({token})
 });
 server.get('/facebook', facebook.authenticate());
-server.use('/google', google.authenticate());
 
-server.use('/google/return', google.returnAuthenticate(), (req,res) => {
-  res.redirect('/graphql')
+server.get('/google/return', google.returnAuthenticate(), (req,res) => {
+  const token = req.user.tokens;
+  res.json({token})
 });
+
+server.get('/google', google.authenticate());
+
+
 
 
 
@@ -47,7 +50,7 @@ server.use('/graphql',graphqlHttp((req) => {
   }
 }))
 
-server.listen(9090, (err) => {
+server.listen(config.apiPort, (err) => {
   if(err) {console.log(err)}
-  else {console.log('Server ready to take you to 🚀  Good ☘  port 9090')};
+  else {console.log(`🚀Server is ready on ${config.apiPort}`)};
 });
