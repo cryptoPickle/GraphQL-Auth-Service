@@ -4,12 +4,13 @@ import logger from './Services/Logger';
 import passport from 'passport';
 
 import userTokenValidation from './middlewares/token';
-import config from './config'
+import config from './config';
 import graphqlHttp from 'express-graphql';
-import schema from './graphql'
-import routes from './Routes'
+import schema from './graphql';
+import routes from './Routes';
 
-
+import UserModel from './Models/User/UserRepository';
+import TokenModel from './Models/Token/TokenRepository';
 
 const server = express();
 
@@ -29,7 +30,9 @@ server.use('/graphql',graphqlHttp((req) => {
     graphiql: true,
     schema,
     context: {
-      req
+      req,
+      UserModel,
+      TokenModel
     }
   }
 }));

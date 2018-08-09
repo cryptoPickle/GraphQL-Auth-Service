@@ -93,7 +93,6 @@ class Auth {
       user.accessToken = jwt_access_token;
       user.refreshToken = jwt_refresh_token;
       user.isCompleted = true;
-      debugger;
       await this.tokenmodel.findOrUpdate(user.id,{
         jwt_access_token,
         jwt_refresh_token,

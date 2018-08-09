@@ -7,17 +7,20 @@ enum Gender {
 type User {
   id: ID!
   email: String!
-  password: String!
+  password: String
   name: String!
   surname: String!
-  age: Int!
-  birthday: String!
-  gender: Gender!
-  googleProfile: String
-  googleVerified: Boolean
-  facebookProfile: String
-  facebookVerified: Boolean
+  age: Int
+  birthday: String
+  gender: Gender
+  google_profile_id: String
+  google_verified: Boolean
+  facebook_profile_id: String
+  facebook_verified: Boolean
+  isCompleted: Boolean
+  isFrozen: Boolean
   created_at: String
   updated_at: String
   delete_at: String
 }
+

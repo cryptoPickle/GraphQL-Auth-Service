@@ -1,5 +1,5 @@
 type Query {
   getUserById(id: ID!) : User!
-  getTokenByUserId(userId: ID!) : Token!
-  getTokenByTokenId(tokenId: ID!) : Token!
+  getTokens: Token!
+  getProfile: User!
 }

@@ -19,7 +19,7 @@ export default {
     return await UserModel.query().where('email', '=', email)
   },
   async getUserById(id){
-    return await UserModel.query().where('id', '=', id)
+    return await UserModel.query().where({id})
   },
 
   async fetchByIdOrMail(id, email){
@@ -36,7 +36,6 @@ export default {
 
 
   async findOrCreate(model, userinfo, type){
-    debugger
 
     const id = {[propertyNameDecider(type)]:model[propertyNameDecider(type)]}
 

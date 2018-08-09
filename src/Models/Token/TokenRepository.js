@@ -24,5 +24,12 @@ export default {
     }catch (e) {
       console.log(e)
     }
+  },
+  async getTokens(user_id){
+    try{
+      return await TokenModel.query().where({user_id})
+    }catch (e) {
+      console.log(e)
+    }
   }
 }

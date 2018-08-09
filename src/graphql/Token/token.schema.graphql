@@ -1,9 +1,12 @@
 type Token {
   id: ID!
-  userId: ID!
-  googleAccessToken: String!
-  facebookAccessToken: String!
-  jwtRefreshToken: String!
+  user_id: ID!
+  google_access_token: String
+  facebook_access_token: String
+  jwt_refresh_token: String
+  jwt_access_token: String
+  created_at: String
+  updated_at: String
 }
 
 

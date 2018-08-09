@@ -1,12 +1,13 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import config from '../../config'
+import config from '../../config';
+import userRepository from '../../Models/User/UserRepository'
 
 /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
 
 class Token  {
   constructor(model, accessToken, refreshToken){
-
+    this.userModel = userRepository;
     this.accessToken = accessToken || config.jwtAccessToken;
     this.refreshToken = refreshToken || config.jwtRefreshToken;
   }
@@ -23,7 +24,7 @@ class Token  {
   async refreshTokens(accesToken, refreshToken){
     let userId = -1;
     try{
-      const {user: {id}} = jwt.decode(refreshToken);
+      const {user:{id}} = jwt.decode(refreshToken);
       userId = id;
     }catch(e){
       return {}
@@ -33,9 +34,11 @@ class Token  {
       return {}
     };
 
-    const user = await this.model.findOne({where: {id: userId}, raw: true});
+    const fetchedUser = await this.userModel.getUserById(userId);
+    const user = fetchedUser[0];
 
-    const refreshSecret = this.refreshToken + user.password;
+
+    const refreshSecret = this.refreshToken + ((user.password) ? user.password : "");
     try{
       jwt.verify(refreshToken, refreshSecret);
     }catch(e){
@@ -64,5 +67,6 @@ class Token  {
     }
   }
 }
+
 
 export default Token;
