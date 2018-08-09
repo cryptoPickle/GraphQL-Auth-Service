@@ -3,9 +3,9 @@ input signupInput {
   password: String!
   name: String!
   surname: String!
-  age: Int!
-  birthday: String!
-  gender: Gender!
+  age: Int
+  birthday: String
+  gender: Gender
 }
 
 input loginInput {

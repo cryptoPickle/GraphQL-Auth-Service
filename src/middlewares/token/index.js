@@ -15,9 +15,13 @@ const userTokenValidation = (accessTokenSecret) =>
         const refreshToken = req.headers['x-refresh-token'];
         const newTokens = await tokenManager.refreshTokens(token, refreshToken);
         if(newTokens.token && newTokens.refreshToken){
+
           res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token')
           res.set('x-token', newTokens.token);
           res.set('x-refresh-token', newTokens.refreshToken);
+        }
+        else{
+          res.send({error: "Invalid Token"})
         }
         req.user = newTokens.user;
       }

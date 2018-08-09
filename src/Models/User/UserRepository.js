@@ -12,11 +12,17 @@ const propertyNameDecider = (type) => {
 
 
 export default {
-  async addUser(userInfo){
-    return await UserModel.query().insert(userInfo)
+  async addUser(userInfo, res){
+    const fetched = await UserModel.query().where({email: userInfo.email});
+    if(fetched.length === 0) {
+      return await UserModel.query().insertAndFetch(userInfo)
+    }
+    else{
+      res.json({error:'Email is already in use'})
+    }
   },
   async getUserByEmail(email){
-    return await UserModel.query().where('email', '=', email)
+    return await UserModel.query().where({email})
   },
   async getUserById(id){
     return await UserModel.query().where({id})
@@ -36,7 +42,7 @@ export default {
 
 
   async findOrCreate(model, userinfo, type){
-
+    const returnedFields = ['id','email', 'name', 'surname'];
     const id = {[propertyNameDecider(type)]:model[propertyNameDecider(type)]}
 
 
@@ -46,22 +52,29 @@ export default {
 
 
       if(fetched.length === 0){
-        await UserModel.query().insert(userinfo);
-        return await this.fetchByIdOrMail(id, model.email);
+        const test = await UserModel.query()
+          .insertAndFetch(userinfo)
+          .where(id)
+          .pick(returnedFields);
+        return test
       }
 
       if(userinfo.email && fetched[0].email === userinfo.email){
-
+        const email = userinfo.email;
         switch(type){
 
           case 'facebook':
             const {facebook_profile_id, facebook_verified} = userinfo;
-            await UserModel.query().patch({facebook_profile_id, facebook_verified})
+            await UserModel.query()
+              .patch({facebook_profile_id, facebook_verified})
+              .where({email})
             return await this.fetchByIdOrMail(id, model.email);
 
           case 'google':
             const {google_profile_id, google_verified} = userinfo;
-            await UserModel.query().patch({google_profile_id, google_verified})
+            await UserModel.query()
+              .patch({google_profile_id, google_verified})
+              .where({email})
             return await this.fetchByIdOrMail(id, model.email);
         }
       }

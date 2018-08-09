@@ -25,12 +25,13 @@ server.use('/v1', routes);
 
 server.use(userTokenValidation(config.jwtAccessToken));
 
-server.use('/graphql',graphqlHttp((req) => {
+server.use('/graphql',graphqlHttp((req,res) => {
   return {
     graphiql: true,
     schema,
     context: {
       req,
+      res,
       UserModel,
       TokenModel
     }

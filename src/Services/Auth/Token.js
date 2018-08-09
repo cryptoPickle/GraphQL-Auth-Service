@@ -22,6 +22,7 @@ class Token  {
 
 
   async refreshTokens(accesToken, refreshToken){
+
     let userId = -1;
     try{
       const {user:{id}} = jwt.decode(refreshToken);
@@ -36,20 +37,25 @@ class Token  {
 
     const fetchedUser = await this.userModel.getUserById(userId);
     const user = fetchedUser[0];
+    if(!user){
+      return false
+    }
+    else{
+      const refreshSecret = this.refreshToken + ((user.password) ? user.password : "");
+      try{
+        jwt.verify(refreshToken, refreshSecret);
+      }catch(e){
+        return {}
+      }
+      const [newToken, newRefreshToken] = await this.createTokens(user);
+      return {
+        token: newToken,
+        refreshToken: newRefreshToken,
+        user
+      }
+    }
 
 
-    const refreshSecret = this.refreshToken + ((user.password) ? user.password : "");
-    try{
-      jwt.verify(refreshToken, refreshSecret);
-    }catch(e){
-      return {}
-    }
-    const [newToken, newRefreshToken] = await this.createTokens(user);
-    return {
-      token: newToken,
-      refreshToken: newRefreshToken,
-      user
-    }
   }
 
 
