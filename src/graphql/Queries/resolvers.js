@@ -1,14 +1,18 @@
+import isLoggedIn from '../utils/isLoggedIn'
+
+
 const resolvers = {
   Query: {
 
     async getTokens(_, args, ctx){
-      const {id} = ctx.req.user;
-      const tokens = await ctx.TokenModel.getTokens(id);
-      console.log(tokens)
-      return tokens[0]
+      return isLoggedIn(ctx.req, async() => {
+        const {id} = ctx.req.user;
+        const tokens = await ctx.TokenModel.getTokens(id);
+        return tokens[0]
+      });
     },
     getProfile(_,args,ctx){
-      return ctx.req.user;
+      return isLoggedIn(ctx.req, () => ctx.req.user)
     }
   }
 }
