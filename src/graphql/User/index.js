@@ -1,5 +1,5 @@
-import readGqlFile from '../utils/readGraphqlFile';
-
+import fs from 'fs';
+import path from 'path';
 export default {
-  schema: readGqlFile('./User/user.schema.graphql')
+  schema: fs.readFileSync(path.resolve(__dirname,'./user.schema.graphql'), 'utf8'),
 }

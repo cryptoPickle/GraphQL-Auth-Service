@@ -1,7 +1,10 @@
-import readGqlFile from '../utils/readGraphqlFile';
 import resolvers from './resolvers';
+import fs from 'fs';
+import path from 'path';
+
+
 
 export default {
-  schema: readGqlFile('./Mutations/mutations.graphql'),
+  schema: fs.readFileSync(path.resolve(__dirname,'./mutations.graphql'), 'utf8'),
   resolvers
 }

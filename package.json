@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "babel-loader": "^7.1.5",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-0": "^6.24.1",
@@ -27,12 +28,24 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^7.4.3",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "webpack": "^4.16.5",
+    "webpack-graphql-loader": "^1.0.0",
+    "webpack-node-externals": "^1.7.2"
   },
   "scripts": {
-    "dev": "NODE_ENV='development' nodemon --inspect ./src/start.babel.js",
+    "dev": "NODE_ENV='development' node-dev --inspect  ./src/start.babel.js",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
-    "migrate:run": "npm run migrate && npm run dev"
+    "migrate:run": "npm run migrate && npm run dev",
+    "build:server:once": "NODE_ENV='development' webpack --config webpack.config.js ",
+    "dev:server": "npm run build:server:once && npm-run-all --parallel nodemon:prod watch:server",
+    "watch:server": "NODE_ENV='development' webpack --config webpack.config.js --watch",
+    "nodemon:prod": "NODE_ENV=development node-dev dist/server.prod.js"
+  },
+  "devDependencies": {
+    "dotenv-webpack": "^1.5.7",
+    "webpack-cli": "^3.1.0",
+    "webpack-merge": "^4.1.4"
   }
 }

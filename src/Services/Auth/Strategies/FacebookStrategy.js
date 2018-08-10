@@ -2,7 +2,7 @@ import passport from 'passport';
 import {Strategy} from 'passport-facebook';
 import Auth from './Auth';
 import config from '../../../config'
-import Token from '../Token'
+
 
 const defaultPermissions =['user_friends', 'emails', 'public_profile'];
 const fields = ['id', 'displayName', 'emails', 'first_name', 'middle_name', 'last_name'];
