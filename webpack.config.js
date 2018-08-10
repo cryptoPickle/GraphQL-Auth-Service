@@ -5,34 +5,6 @@ const Dotenv = require('dotenv-webpack');
 const webpackMerge = require('webpack-merge');
 
 
-// const env = process.env.NODE_ENV;
-// const isProduction = env !== 'development';
-
-
-// const plugins = [
-//   new webpack.DefinePlugin({
-//     $dirname: '__dirname',
-//     'process.env':{
-//       NODE_ENV: JSON.stringify(env)
-//     }
-//   }),
-//   new webpack.NamedModulesPlugin(),
-//   new Dotenv({systemvars: true})
-// ];
-
-// if(!isProduction){
-//   plugins.push(new webpack.HotModuleReplacementPlugin())
-// }
-
-// const entry = isProduction ? [
-//   'babel-polyfill',
-//   path.resolve(path.join(__dirname, './src/server'))
-//   ] : [
-//   'webpack/hot/poll?1000',
-//   'babel-polyfill',
-//   path.resolve(path.join(__dirname, './src/server'))
-// ];
-
 const env = process.env.NODE_ENV;
 
 const modeConfig = (env) => require(`./webpack/webpack.${env}`)(env);
@@ -59,7 +31,6 @@ module.exports = () => webpackMerge({
   module:{
     rules: [
       {test: /\.js$/, loader: 'babel-loader', options:{babelrc:true}},
-      {test: /\.graphql?$/, loader:'webpack-graphql-loader'}
       ]
   },
 

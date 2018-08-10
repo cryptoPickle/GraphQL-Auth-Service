@@ -28,11 +28,17 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^7.4.3",
-    "uuid": "^3.3.2",
-    "webpack": "^4.16.5",
-    "webpack-graphql-loader": "^1.0.0",
-    "webpack-node-externals": "^1.7.2"
+    "uuid": "^3.3.2"
   },
+  
+  "devDependencies": {
+    "dotenv-webpack": "^1.5.7",
+    "webpack-cli": "^3.1.0",
+    "webpack-merge": "^4.1.4",
+    "webpack-node-externals": "^1.7.2",
+    "webpack": "^4.16.5"
+  },
+  
   "scripts": {
     "dev": "NODE_ENV='development' node-dev --inspect  ./src/start.babel.js",
     "migrate": "knex migrate:latest",
@@ -42,10 +48,5 @@
     "dev:server": "npm run build:server:once && npm-run-all --parallel nodemon:prod watch:server",
     "watch:server": "NODE_ENV='development' webpack --config webpack.config.js --watch",
     "nodemon:prod": "NODE_ENV=development node-dev dist/server.prod.js"
-  },
-  "devDependencies": {
-    "dotenv-webpack": "^1.5.7",
-    "webpack-cli": "^3.1.0",
-    "webpack-merge": "^4.1.4"
   }
 }
