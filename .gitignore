@@ -6,3 +6,4 @@ yarn.lock
 postgres-data
 .idea
 playground.js
+logs/*

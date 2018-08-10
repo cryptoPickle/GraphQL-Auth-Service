@@ -40,17 +40,18 @@
   },
   
   "scripts": {
-    "dev": "NODE_ENV='development' node-dev --inspect  ./src/start.babel.js",
+    "dev": "NODE_ENV='development' node-dev ./src/start.babel.js",
+    "dev:server": "npm run build:server:once && npm-run-all --parallel pm2:watch watch:server",
+    "start:prod": "pm2 start ./dist/server.prod.js",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "migrate:run": "npm run migrate && npm run dev",
     "build:server:once": "NODE_ENV='development' webpack --config webpack.config.js ",
-    "dev:server": "npm run build:server:once && npm-run-all --parallel nodemon:prod watch:server",
-    "watch:server": "NODE_ENV='development' webpack --config webpack.config.js --watch",
-    "nodemon:prod": "NODE_ENV='development' node-dev dist/server.prod.js",
-    "start:prod": "node_ENV='production' pm2 start",
-    "prod:monitor": "pm2 monit",
-    "prod:kill": "pm2 kill",
-    "prod:logs": "pm2 logs --lines 1000"
+    "watch:server": "rm -rf dist && NODE_ENV='development' webpack --config webpack.config.js --watch",
+    "pm2:watch": "NODE_ENV='development' pm2 start",
+    "pm2:monitor": "pm2 monit",
+    "pm2:stop": "pm2 stop all",
+    "pm2:log": "pm2 logs --lines 1000",
+    "restart": "pm2 reload all"
   }
 }

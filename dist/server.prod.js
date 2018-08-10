@@ -23,7 +23,7 @@ module.exports =
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "3133a8564e93c71b875d";
+/******/ 	var hotCurrentHash = "257617f5d4743cc4e29e";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -2143,24 +2143,25 @@ var _config = __webpack_require__(/*! ./config */ "./src/config/index.js");var _
 var _expressGraphql = __webpack_require__(/*! express-graphql */ "express-graphql");var _expressGraphql2 = _interopRequireDefault(_expressGraphql);
 var _graphql = __webpack_require__(/*! ./graphql */ "./src/graphql/index.js");var _graphql2 = _interopRequireDefault(_graphql);
 var _Routes = __webpack_require__(/*! ./Routes */ "./src/Routes/index.js");var _Routes2 = _interopRequireDefault(_Routes);
+var _http = __webpack_require__(/*! http */ "http");var _http2 = _interopRequireDefault(_http);
 
 var _UserRepository = __webpack_require__(/*! ./Models/User/UserRepository */ "./src/Models/User/UserRepository.js");var _UserRepository2 = _interopRequireDefault(_UserRepository);
 var _TokenRepository = __webpack_require__(/*! ./Models/Token/TokenRepository */ "./src/Models/Token/TokenRepository.js");var _TokenRepository2 = _interopRequireDefault(_TokenRepository);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
 
-const server = (0, _express2.default)();
+const app = (0, _express2.default)();
 
-server.use(_bodyParser2.default.json());
+app.use(_bodyParser2.default.json());
 
-server.use((0, _Logger2.default)("development"));
+app.use((0, _Logger2.default)("development"));
 
-server.use(_passport2.default.initialize());
+app.use(_passport2.default.initialize());
 
 
-server.use('/v1', _Routes2.default);
+app.use('/v1', _Routes2.default);
 
-server.use((0, _token2.default)(_config2.default.jwtAccessToken));
+app.use((0, _token2.default)(_config2.default.jwtAccessToken));
 
-server.use('/graphql', (0, _expressGraphql2.default)((req, res) => {
+app.use('/graphql', (0, _expressGraphql2.default)((req, res) => {
   return {
     graphiql: true,
     schema: _graphql2.default,
@@ -2173,9 +2174,24 @@ server.use('/graphql', (0, _expressGraphql2.default)((req, res) => {
 
 }));
 
+const server = _http2.default.createServer(app);
+
 server.listen(_config2.default.apiPort, err => {
   if (err) {console.log(err);} else
   {console.log(`🚀Server is ready on ${_config2.default.apiPort} 🛸`);};
+});
+
+
+// PM2 Graceful Shutdown
+
+process.on('SIGINT', () => {
+  console.log('Server is shutting down... 🚦');
+  server.close(err => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
 });
 
 /***/ }),
@@ -2309,6 +2325,17 @@ module.exports = require("fs");
 /***/ (function(module, exports) {
 
 module.exports = require("graphql-tools");
+
+/***/ }),
+
+/***/ "http":
+/*!***********************!*\
+  !*** external "http" ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("http");
 
 /***/ }),
 
