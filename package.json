@@ -47,6 +47,10 @@
     "build:server:once": "NODE_ENV='development' webpack --config webpack.config.js ",
     "dev:server": "npm run build:server:once && npm-run-all --parallel nodemon:prod watch:server",
     "watch:server": "NODE_ENV='development' webpack --config webpack.config.js --watch",
-    "nodemon:prod": "NODE_ENV=development node-dev dist/server.prod.js"
+    "nodemon:prod": "NODE_ENV='development' node-dev dist/server.prod.js",
+    "start:prod": "node_ENV='production' pm2 start",
+    "prod:monitor": "pm2 monit",
+    "prod:kill": "pm2 kill",
+    "prod:logs": "pm2 logs --lines 1000"
   }
 }
