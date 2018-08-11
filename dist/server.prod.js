@@ -23,7 +23,7 @@ module.exports =
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "77b287d1369994c6192c";
+/******/ 	var hotCurrentHash = "cef667a3f03a742db92b";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1646,7 +1646,7 @@ class Token {
 
   /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Creating Tokens
   createTokens(user, userpass) {var _this = this;return _asyncToGenerator(function* () {
-      const refreshTokenSecret = userpass ? _this.refreshTokenSecret + userpass : _this.refreshToken;
+      const refreshTokenSecret = userpass ? _this.refreshTokenSecret + userpass : _this.refreshTokenSecret;
 
       const accessToken = _jsonwebtoken2.default.sign({ user }, _this.accessTokenSecret, { expiresIn: '1m' });
       const refreshToken = _jsonwebtoken2.default.sign({ user }, refreshTokenSecret, { expiresIn: '7d' });

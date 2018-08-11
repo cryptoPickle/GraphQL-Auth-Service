@@ -13,7 +13,7 @@ COPY . $DEST_FOLDER
 
 
 
-RUN npm install knex nodemon -g && \
+RUN npm install knex node-dev pm2 webpack -g && \
     mkdir -p $DEST_FOLDER && \
     npm install
 

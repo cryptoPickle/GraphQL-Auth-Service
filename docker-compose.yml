@@ -16,7 +16,7 @@ services:
       - .:/usr/src/authenticationservice
     networks:
       - authnetwork
-    command: ['sh', '-c', 'sleep 20 && npm run migrate:run']
+    command: ['sh', '-c', 'sleep 20 && npm run prod:server']
 
   psql:
     restart: always
