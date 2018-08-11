@@ -7,13 +7,13 @@ module.exports = {
       name: "Authentication Micro Service",
       script:"./dist/server.prod.js",
       exec_mode: "cluster",
-      instances: isProduction ? "max" : 2,
+      instances: "max",
       kill_timeout: 1600,
 
       output: './logs/out.log',
       error: './logs/error.log',
+      pid_file : "./logs/service.pid",
       merge_logs: true,
-      watch:  ".",
       node_args: ["--inspect"]
     }
   ]

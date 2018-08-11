@@ -1,9 +1,8 @@
-const env = require('dotenv');
+const config = require('./src/config');
 const path = require('path');
 
 /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: IMPORT END
 
-env.load(path.resolve(__dirname, '.env'));
 
 const {
   POSTGRES_HOST,
@@ -11,7 +10,7 @@ const {
   POSTGRES_USER,
   POSTGRES_PASSWORD,
   POSTGRES_DB
-} = process.env;
+} = config;
 
 module.exports = {
   /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: DEVELOPMENT

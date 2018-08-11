@@ -23,7 +23,7 @@ module.exports =
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "257617f5d4743cc4e29e";
+/******/ 	var hotCurrentHash = "82c04fd2de0964929272";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -761,12 +761,11 @@ module.exports =
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-const env = __webpack_require__(/*! dotenv */ "dotenv");
+const config = __webpack_require__(/*! ./src/config */ "./src/config/index.js");
 const path = __webpack_require__(/*! path */ "path");
 
 /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: IMPORT END
 
-env.load(path.resolve(__dirname, '.env'));
 
 const {
   POSTGRES_HOST,
@@ -774,7 +773,7 @@ const {
   POSTGRES_USER,
   POSTGRES_PASSWORD,
   POSTGRES_DB } =
-Object({"NODE_ENV":"development"});
+config;
 
 module.exports = {
   /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: DEVELOPMENT
@@ -1102,12 +1101,16 @@ const propertyNameDecider = type => {
 
 {
   addUser(userInfo, res) {return _asyncToGenerator(function* () {
-      const fetched = yield _UserModel2.default.query().where({ email: userInfo.email });
-      if (fetched.length === 0) {
-        return yield _UserModel2.default.query().insertAndFetch(userInfo);
-      } else
-      {
-        res.json({ error: 'Email is already in use' });
+      try {
+        const fetched = yield _UserModel2.default.query().where({ email: userInfo.email });
+        if (fetched.length === 0) {
+          return yield _UserModel2.default.query().insertAndFetch(userInfo);
+        } else
+        {
+          res.json({ error: 'Email is already in use' });
+        }
+      } catch (e) {
+        console.log(e);
       }})();
   },
   getUserByEmail(email) {return _asyncToGenerator(function* () {
@@ -1778,9 +1781,9 @@ devLogger;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });var _dotenv = __webpack_require__(/*! dotenv */ "dotenv");var _dotenv2 = _interopRequireDefault(_dotenv);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+const dotEnv = __webpack_require__(/*! dotenv */ "dotenv");
 
-_dotenv2.default.load();
+dotEnv.load();
 
 const isDevelopment = "development" === 'development';
 
@@ -1789,13 +1792,17 @@ const config = {
   facebookAppSecret: "38ff2621164baeb6a3d1f544f7581ac5",
   googleClientID: "97042491529-kng3n1j51qbbpfpgehutvj9s075u9843.apps.googleusercontent.com",
   googleClientSecret: "U3fqzCk-wRJQifbv7RkcJdpe",
-  jwtSecret: Object({"NODE_ENV":"development"}).JWT_SECRET,
   jwtAccessToken: "secret",
   jwtRefreshToken: "secret2",
-  apiPort: "9090" };exports.default =
+  apiPort: "9090",
+  POSTGRES_HOST: "127.0.0.1",
+  POSTGRES_PORT: "5432",
+  POSTGRES_USER: "postgres",
+  POSTGRES_PASSWORD: "",
+  POSTGRES_DB: "auth" };
 
 
-config;
+module.exports = config;
 
 /***/ }),
 
@@ -2150,6 +2157,13 @@ var _TokenRepository = __webpack_require__(/*! ./Models/Token/TokenRepository */
 
 const app = (0, _express2.default)();
 
+
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: HMR
+if (true) {
+  module.hot.accept();
+}
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
+
 app.use(_bodyParser2.default.json());
 
 app.use((0, _Logger2.default)("development"));
@@ -2174,24 +2188,9 @@ app.use('/graphql', (0, _expressGraphql2.default)((req, res) => {
 
 }));
 
-const server = _http2.default.createServer(app);
-
-server.listen(_config2.default.apiPort, err => {
+app.listen(_config2.default.apiPort, err => {
   if (err) {console.log(err);} else
-  {console.log(`🚀Server is ready on ${_config2.default.apiPort} 🛸`);};
-});
-
-
-// PM2 Graceful Shutdown
-
-process.on('SIGINT', () => {
-  console.log('Server is shutting down... 🚦');
-  server.close(err => {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-  });
+  {console.log(`🚀Server is ready on ${_config2.default.apiPort}`);};
 });
 
 /***/ }),

@@ -1,8 +1,9 @@
 {
-  "name": "auth",
+  "name": "authmicroservice",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "author": "Halil Irmak",
   "dependencies": {
     "babel-loader": "^7.1.5",
     "babel-polyfill": "^6.26.0",
@@ -40,17 +41,18 @@
   },
   
   "scripts": {
-    "dev": "NODE_ENV='development' node-dev ./src/start.babel.js",
-    "dev:server": "npm run build:server:once && npm-run-all --parallel pm2:watch watch:server",
-    "start:prod": "pm2 start ./dist/server.prod.js",
+    "dev": "NODE_ENV='development' node-dev --inspect ./src/start.babel.js",
+    "dev:server": "NODE_ENV='production' npm run build:server:once && npm-run-all --parallel nodemon watch:server",
+    "prod:server": "NODE_ENV='production' pm2 start ",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "migrate:run": "npm run migrate && npm run dev",
     "build:server:once": "NODE_ENV='development' webpack --config webpack.config.js ",
-    "watch:server": "rm -rf dist && NODE_ENV='development' webpack --config webpack.config.js --watch",
-    "pm2:watch": "NODE_ENV='development' pm2 start",
+    "prebuild:server:once": "rm -f $(pwd)/dist/* && node utils/loadgraphqlFiles.js",
+    "watch:server": "NODE_ENV='development' webpack --config webpack.config.js --watch",
+    "nodemon": "NODE_ENV='development' node-dev dist/server.prod.js",
     "pm2:monitor": "pm2 monit",
-    "pm2:stop": "pm2 stop all",
+    "pm2:kill": "pm2 kill",
     "pm2:log": "pm2 logs --lines 1000",
     "restart": "pm2 reload all"
   }

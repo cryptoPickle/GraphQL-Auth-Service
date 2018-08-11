@@ -13,12 +13,16 @@ const propertyNameDecider = (type) => {
 
 export default {
   async addUser(userInfo, res){
-    const fetched = await UserModel.query().where({email: userInfo.email});
-    if(fetched.length === 0) {
-      return await UserModel.query().insertAndFetch(userInfo)
-    }
-    else{
-      res.json({error:'Email is already in use'})
+    try {
+      const fetched = await UserModel.query().where({ email: userInfo.email });
+      if (fetched.length === 0) {
+        return await UserModel.query().insertAndFetch(userInfo)
+      }
+      else {
+        res.json({ error: 'Email is already in use' })
+      }
+    }catch (e) {
+      console.log(e)
     }
   },
   async getUserByEmail(email){
