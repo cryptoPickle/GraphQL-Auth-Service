@@ -10,6 +10,7 @@ const propertyNameDecider = (type) => {
   }
 }
 
+const returnedFields = ['id','email', 'name', 'surname'];
 
 export default {
   async addUser(userInfo, res){
@@ -26,14 +27,14 @@ export default {
     }
   },
   async getUserByEmail(email){
-    return await UserModel.query().where({email})
+    const fields = [...returnedFields, 'password'];
+    return await UserModel.query().where({email}).select(fields);
   },
   async getUserById(id){
     return await UserModel.query().where({id})
   },
 
   async fetchByIdOrMail(id, email){
-    const returnedFields = ['id','email', 'name', 'surname'];
     return await await UserModel.query().where((id) ? id : false )
       .orWhere((email) ? {email}: false)
       .select(returnedFields);

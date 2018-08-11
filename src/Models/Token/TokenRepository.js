@@ -13,14 +13,18 @@ export default {
 
         await TokenModel.query().patch(tokens);
 
-        const tkns = TokenModel.query().where({user_id: userId}).select(selected)
-        return tkns
+        const tkns = await TokenModel.query()
+          .where({user_id: userId})
+          .select(selected)
+
+        return tkns[0]
+
       }
       // Create Token If User Id Does Not Exists and fetch::::::::::::::::::::::
 
-      await TokenModel.query().insert({user_id: userId, ...tokens});
-      const tkns = await TokenModel.query().where({user_id: userId}).select(selected);
-      return tkns
+      return await TokenModel.query()
+        .insertAndFetch({user_id: userId, ...tokens})
+        .select(selected);
     }catch (e) {
       console.log(e)
     }
@@ -31,5 +35,5 @@ export default {
     }catch (e) {
       console.log(e)
     }
-  }
+  },
 }

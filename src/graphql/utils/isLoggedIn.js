@@ -8,6 +8,7 @@ const isLoggedIn = (req, cb) => {
 
     return cb()
   }
+
   else{
      if(!req.user.isCompleted) throw new Error('Please Complete Registration');
      else{

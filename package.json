@@ -44,6 +44,7 @@
     "dev": "NODE_ENV='development' node-dev --inspect ./src/start.babel.js",
     "dev:server": "NODE_ENV='production' npm run build:server:once && npm-run-all --parallel nodemon watch:server",
     "prod:server": "NODE_ENV='production' pm2 start ",
+    "preprod:server": "rm -f $(pwd)/dist/* && node utils/loadgraphqlFiles.js && npm run build:server:once",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "migrate:run": "npm run migrate && npm run dev",

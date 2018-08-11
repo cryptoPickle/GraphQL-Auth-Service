@@ -8,21 +8,21 @@ import userRepository from '../../Models/User/UserRepository'
 class Token  {
   constructor(model, accessToken, refreshToken){
     this.userModel = userRepository;
-    this.accessToken = accessToken || config.jwtAccessToken;
-    this.refreshToken = refreshToken || config.jwtRefreshToken;
+    this.accessTokenSecret = accessToken || config.jwtAccessToken;
+    this.refreshTokenSecret = refreshToken || config.jwtRefreshToken;
   }
 
   /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Creating Tokens
-  async createTokens(user){
-    ;
-    const accessToken = jwt.sign({user}, this.accessToken, {expiresIn:'1m'});
-    const refreshToken = jwt.sign({user}, this.refreshToken, {expiresIn: '7d'});
+  async createTokens(user, userpass){
+    const refreshTokenSecret = (userpass) ? this.refreshTokenSecret + userpass : this.refreshToken;
+
+    const accessToken = jwt.sign({user}, this.accessTokenSecret, {expiresIn:'1m'});
+    const refreshToken = jwt.sign({user}, refreshTokenSecret, {expiresIn: '7d'});
     return Promise.all([accessToken, refreshToken]);
   }
 
 
   async refreshTokens(accesToken, refreshToken){
-
     let userId = -1;
     try{
       const {user:{id}} = jwt.decode(refreshToken);
@@ -41,13 +41,13 @@ class Token  {
       return false
     }
     else{
-      const refreshSecret = this.refreshToken + ((user.password) ? user.password : "");
+      const refreshSecret = this.refreshTokenSecret + ((user.password) ? user.password : "");
       try{
         jwt.verify(refreshToken, refreshSecret);
       }catch(e){
         return {}
       }
-      const [newToken, newRefreshToken] = await this.createTokens(user);
+      const [newToken, newRefreshToken] = await this.createTokens(user, user.password);
       return {
         token: newToken,
         refreshToken: newRefreshToken,

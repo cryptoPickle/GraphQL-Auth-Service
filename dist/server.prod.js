@@ -23,7 +23,7 @@ module.exports =
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "82c04fd2de0964929272";
+/******/ 	var hotCurrentHash = "77b287d1369994c6192c";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1037,14 +1037,18 @@ Object.defineProperty(exports, "__esModule", { value: true });var _extends = Obj
 
           yield _TokenModel2.default.query().patch(tokens);
 
-          const tkns = _TokenModel2.default.query().where({ user_id: userId }).select(selected);
-          return tkns;
+          const tkns = yield _TokenModel2.default.query().
+          where({ user_id: userId }).
+          select(selected);
+
+          return tkns[0];
+
         }
         // Create Token If User Id Does Not Exists and fetch::::::::::::::::::::::
 
-        yield _TokenModel2.default.query().insert(_extends({ user_id: userId }, tokens));
-        const tkns = yield _TokenModel2.default.query().where({ user_id: userId }).select(selected);
-        return tkns;
+        return yield _TokenModel2.default.query().
+        insertAndFetch(_extends({ user_id: userId }, tokens)).
+        select(selected);
       } catch (e) {
         console.log(e);
       }})();
@@ -1096,8 +1100,9 @@ const propertyNameDecider = type => {
     case 'google':
       return 'google_profile_id';}
 
-};exports.default =
+};
 
+const returnedFields = ['id', 'email', 'name', 'surname'];exports.default =
 
 {
   addUser(userInfo, res) {return _asyncToGenerator(function* () {
@@ -1114,14 +1119,14 @@ const propertyNameDecider = type => {
       }})();
   },
   getUserByEmail(email) {return _asyncToGenerator(function* () {
-      return yield _UserModel2.default.query().where({ email });})();
+      const fields = [...returnedFields, 'password'];
+      return yield _UserModel2.default.query().where({ email }).select(fields);})();
   },
   getUserById(id) {return _asyncToGenerator(function* () {
       return yield _UserModel2.default.query().where({ id });})();
   },
 
   fetchByIdOrMail(id, email) {return _asyncToGenerator(function* () {
-      const returnedFields = ['id', 'email', 'name', 'surname'];
       return yield yield _UserModel2.default.query().where(id ? id : false).
       orWhere(email ? { email } : false).
       select(returnedFields);})();
@@ -1635,21 +1640,21 @@ var _UserRepository = __webpack_require__(/*! ../../Models/User/UserRepository *
 class Token {
   constructor(model, accessToken, refreshToken) {
     this.userModel = _UserRepository2.default;
-    this.accessToken = accessToken || _config2.default.jwtAccessToken;
-    this.refreshToken = refreshToken || _config2.default.jwtRefreshToken;
+    this.accessTokenSecret = accessToken || _config2.default.jwtAccessToken;
+    this.refreshTokenSecret = refreshToken || _config2.default.jwtRefreshToken;
   }
 
   /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Creating Tokens
-  createTokens(user) {var _this = this;return _asyncToGenerator(function* () {
-      ;
-      const accessToken = _jsonwebtoken2.default.sign({ user }, _this.accessToken, { expiresIn: '1m' });
-      const refreshToken = _jsonwebtoken2.default.sign({ user }, _this.refreshToken, { expiresIn: '7d' });
+  createTokens(user, userpass) {var _this = this;return _asyncToGenerator(function* () {
+      const refreshTokenSecret = userpass ? _this.refreshTokenSecret + userpass : _this.refreshToken;
+
+      const accessToken = _jsonwebtoken2.default.sign({ user }, _this.accessTokenSecret, { expiresIn: '1m' });
+      const refreshToken = _jsonwebtoken2.default.sign({ user }, refreshTokenSecret, { expiresIn: '7d' });
       return Promise.all([accessToken, refreshToken]);})();
   }
 
 
   refreshTokens(accesToken, refreshToken) {var _this2 = this;return _asyncToGenerator(function* () {
-
       let userId = -1;
       try {
         const { user: { id } } = _jsonwebtoken2.default.decode(refreshToken);
@@ -1668,13 +1673,13 @@ class Token {
         return false;
       } else
       {
-        const refreshSecret = _this2.refreshToken + (user.password ? user.password : "");
+        const refreshSecret = _this2.refreshTokenSecret + (user.password ? user.password : "");
         try {
           _jsonwebtoken2.default.verify(refreshToken, refreshSecret);
         } catch (e) {
           return {};
         }
-        const [newToken, newRefreshToken] = yield _this2.createTokens(user);
+        const [newToken, newRefreshToken] = yield _this2.createTokens(user, user.password);
         return {
           token: newToken,
           refreshToken: newRefreshToken,
@@ -1898,8 +1903,8 @@ var _path = __webpack_require__(/*! path */ "path");var _path2 = _interopRequire
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });var _hash = __webpack_require__(/*! ../../utils/hash */ "./src/utils/hash.js");var _hash2 = _interopRequireDefault(_hash);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _asyncToGenerator(fn) {return function () {var gen = fn.apply(this, arguments);return new Promise(function (resolve, reject) {function step(key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {return Promise.resolve(value).then(function (value) {step("next", value);}, function (err) {step("throw", err);});}}return step("next");});};}
-
+Object.defineProperty(exports, "__esModule", { value: true });var _hash = __webpack_require__(/*! ../../utils/hash */ "./src/utils/hash.js");var _hash2 = _interopRequireDefault(_hash);
+var _Token = __webpack_require__(/*! ../../Services/Auth/Token */ "./src/Services/Auth/Token.js");var _Token2 = _interopRequireDefault(_Token);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _asyncToGenerator(fn) {return function () {var gen = fn.apply(this, arguments);return new Promise(function (resolve, reject) {function step(key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {return Promise.resolve(value).then(function (value) {step("next", value);}, function (err) {step("throw", err);});}}return step("next");});};}
 const resolvers = {
   Mutation: {
     signUp(_, args, ctx) {return _asyncToGenerator(function* () {
@@ -1908,7 +1913,7 @@ const resolvers = {
         } else
         {
           const { input: { password, email, name, surname, age, birthday, gender } } = args;
-          const hashedPassword = yield (0, _hash2.default)(password);
+          const hashedPassword = yield _hash2.default.password(password);
           const user = {
             email, name, surname, age, birthday, gender,
             password: hashedPassword, isCompleted: true };
@@ -1917,8 +1922,31 @@ const resolvers = {
         }})();
     },
 
-    login(_, args, ctx) {
-      return null;
+    login(_, args, ctx) {return _asyncToGenerator(function* () {
+        // 1 get password by user email
+        // 1a if email exist compare password
+        // 1a2 if true / sign token / send token
+        // 1a3 if false / send invalid credentials
+        // 1b if false sen invalid credentials
+        const { input: { password, email } } = args;
+        const fetched = yield ctx.UserModel.getUserByEmail(email);
+        const user = fetched[0];
+
+        if (user.length === 0) {
+          ctx.res.json({ error: 'Invalid Credentials' });
+        } else
+        {
+          const isValidPassword = yield _hash2.default.compare(password, user.password);
+          if (!isValidPassword) {
+            ctx.res.json({ error: 'Invalid Credentials' });
+          } else
+          {
+            const tokenManager = new _Token2.default();
+            user.isCompleted = true;
+            const [jwt_access_token, jwt_refresh_token] = yield tokenManager.createTokens(user, user.password);
+            return ctx.TokenModel.findOrUpdate(user.id, { jwt_access_token, jwt_refresh_token });
+          }
+        }})();
     } } };exports.default =
 
 
@@ -2076,6 +2104,7 @@ const isLoggedIn = (req, cb) => {
 
     return cb();
   } else
+
   {
     if (!req.user.isCompleted) throw new Error('Please Complete Registration');else
     {
@@ -2208,7 +2237,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 var _bcryptjs = __webpack_require__(/*! bcryptjs */ "bcryptjs");var _bcryptjs2 = _interopRequireDefault(_bcryptjs);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
 
-const hash = param => {
+
+const hash = {}; //@flow/////////////////////////////////////////////////////////////////////////
+
+hash.password = param => {
   return new Promise((resolve, reject) => {
     _bcryptjs2.default.genSalt(10, (err, salt) => {
       if (err) reject(err);
@@ -2218,8 +2250,17 @@ const hash = param => {
       });
     });
   });
-}; //@flow/////////////////////////////////////////////////////////////////////////
-exports.default =
+};
+
+hash.compare = (userpassword, hash) => {
+  return new Promise((resolve, reject) => {
+    _bcryptjs2.default.compare(userpassword, hash, (err, res) => {
+      if (err) reject(err);
+      resolve(res);
+    });
+  });
+};exports.default =
+
 
 hash;
 
