@@ -1,9 +1,8 @@
 {
-  "name": "authmicroservice",
+  "name": "auth",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "author": "Halil Irmak",
   "dependencies": {
     "babel-loader": "^7.1.5",
     "babel-polyfill": "^6.26.0",
@@ -22,8 +21,6 @@
     "knex": "^0.15.2",
     "moment": "^2.22.2",
     "morgan": "^1.9.0",
-    "nodemailer": "^4.6.7",
-    "nodemailer-mailgun-transport": "^1.4.0",
     "objection": "^1.2.2",
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
@@ -33,29 +30,28 @@
     "pg": "^7.4.3",
     "uuid": "^3.3.2"
   },
+  
   "devDependencies": {
     "dotenv-webpack": "^1.5.7",
-    "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-merge": "^4.1.4",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^1.7.2",
+    "webpack": "^4.16.5"
   },
+  
   "scripts": {
-    "dev": "NODE_ENV='development' node-dev --inspect ./src/start.babel.js",
-    "dev:server": "NODE_ENV='production' npm run build:server:once && npm-run-all --parallel nodemon watch:server",
-    "prod:server": "NODE_ENV='production' pm2 start ",
-    "preprod:server": "rm -f $(pwd)/dist/* && node utils/loadgraphqlFiles.js && npm run build:server:once && npm run migrate",
-    "postprod:server": "npm run pm2:log",
+    "dev": "NODE_ENV='development' node-dev ./src/start.babel.js",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",
     "migrate:run": "npm run migrate && npm run dev",
     "build:server:once": "NODE_ENV='development' webpack --config webpack.config.js ",
-    "prebuild:server:once": "rm -f $(pwd)/dist/* && node utils/loadgraphqlFiles.js",
-    "watch:server": "NODE_ENV='development' webpack --config webpack.config.js --watch",
-    "nodemon": "NODE_ENV='development' node-dev dist/server.prod.js",
+    "dev:server": "npm run build:server:once && npm-run-all --parallel pm2:watch watch:server",
+    "watch:server": "rm -rf dist && NODE_ENV='development' webpack --config webpack.config.js --watch",
+    "pm2:watch": "NODE_ENV='development' pm2 start",
+    "start:prod": "pm2 start ./dist/server.prod.js",
     "pm2:monitor": "pm2 monit",
-    "pm2:kill": "pm2 kill",
+    "pm2:stop": "pm2 stop all",
     "pm2:log": "pm2 logs --lines 1000",
-    "restart": "pm2 reload all"
+    "restart:prod": "pm2 reload all"
   }
 }
