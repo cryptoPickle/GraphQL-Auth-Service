@@ -47,7 +47,7 @@ class Auth {
   _checkUserValidUser(user) {
 
     const check = this._checkFields(user);
-    if(check) return {...user, isCompleted: true};
+    if(check) return {...user, isCompleted: true, email_verified: true};
     return user;
   }
 

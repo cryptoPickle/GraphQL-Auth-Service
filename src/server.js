@@ -31,7 +31,7 @@ app.use(passport.initialize());
 
 app.use('/v1', routes);
 
-app.use(userTokenValidation(config.jwtAccessToken));
+app.use(userTokenValidation(config.JWT_ACCESS_TOKEN));
 
 app.use('/graphql',graphqlHttp((req,res) => {
   return {
@@ -46,9 +46,9 @@ app.use('/graphql',graphqlHttp((req,res) => {
   }
 }));
 
-app.listen(config.apiPort, (err) => {
+app.listen(config.API_PORT, (err) => {
   if(err) {console.log(err)}
-  else {console.log(`🚀Server is ready on ${config.apiPort}`)};
+  else {console.log(`🚀Server is ready on ${config.API_PORT}`)};
 });
 
 

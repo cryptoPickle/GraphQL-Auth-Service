@@ -23,6 +23,8 @@ exports.up = function(knex, Promise) {
 
     tbl.boolean('isCompleted').notNullable().default(false);
     tbl.boolean('isFrozen').notNullable().default(false);
+    tbl.integer('email_verification_code').nullable();
+    tbl.boolean('email_verified').notNullable().default(false);
 
 
     tbl.float('created_at').notNullable();

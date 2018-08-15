@@ -7,7 +7,7 @@ import config from '../../../config'
 class JWTStrategy extends Auth {
   constructor(params, jwtSecret){
     super()
-    this.jwtSecret = jwtSecret || config.jwtAccessToken;
+    this.jwtSecret = jwtSecret || config.JWT_ACCESS_TOKEN;
     this.params = params || {
       secretOrKey: this.jwtSecret,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

@@ -10,7 +10,7 @@ const propertyNameDecider = (type) => {
   }
 }
 
-const returnedFields = ['id','email', 'name', 'surname'];
+const returnedFields = ['id','email', 'name', 'surname','isCompleted','email_verified'];
 
 export default {
   async addUser(userInfo, res){
@@ -47,7 +47,6 @@ export default {
 
 
   async findOrCreate(model, userinfo, type){
-    const returnedFields = ['id','email', 'name', 'surname'];
     const id = {[propertyNameDecider(type)]:model[propertyNameDecider(type)]}
 
 
@@ -57,11 +56,11 @@ export default {
 
 
       if(fetched.length === 0){
-        const test = await UserModel.query()
+        return  await UserModel.query()
           .insertAndFetch(userinfo)
           .where(id)
           .pick(returnedFields);
-        return test
+
       }
 
       if(userinfo.email && fetched[0].email === userinfo.email){

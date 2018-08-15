@@ -6,8 +6,8 @@ import config from '../../../config'
 class GoogleStrategy extends Auth {
   constructor(clientID,clientSecret,callbackURL){
     super();
-    this.clientID = clientID || config.googleClientID;
-    this.clientSecret = clientSecret || config.googleClientSecret;
+    this.clientID = clientID || config.GOOGLE_CLIENT_ID;
+    this.clientSecret = clientSecret || config.GOOGLE_CLIENT_SECRET;
     this.callbackURL = callbackURL || 'http://127.0.0.1:9090/v1/auth/google/return';
     this._stategy();
   }

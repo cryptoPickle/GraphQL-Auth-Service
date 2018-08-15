@@ -1,28 +1,54 @@
-import hash from '../../utils/hash'
-import Token from '../../Services/Auth/Token'
+import hash from '../../utils/hash';
+import Token from '../../Services/Auth/Token';
+import verificationCode from '../../utils/verificationCodeGenerator';
+import Mail from '../../Services/Mail/Mail';
+import defaultConfig from '../../config';
+
+const {SENDER_ADDRESS, SENDER_NAME, DEFAULT_MAIL_CONTENT, DEFAULT_MAIL_SUBJECT} = defaultConfig;
+
 const resolvers = {
   Mutation:{
     async signUp(_,args,ctx){
       if(ctx.req.user){
         throw new Error('Already Signed In')
       }
+
+
       else{
         const {input:{password, email, name, surname, age, birthday, gender}} = args;
-        const hashedPassword = await hash.password(password);
-        const user = {
-          email, name, surname, age, birthday, gender,
-          password: hashedPassword, isCompleted: true
-        };
-        return await ctx.UserModel.addUser(user,ctx.res);
+        const userRecord = await ctx.UserModel.getUserByEmail(email);
+
+        if(userRecord.length === 0) {
+          const mailler = new Mail();
+          const email_verification_code = verificationCode();
+
+          const hashedPassword = await hash.password(password);
+          const user = {
+            email, name, surname, age, birthday, gender,
+            password: hashedPassword, isCompleted: true,
+            email_verification_code
+          };
+          const mail = {
+            from: `${SENDER_NAME} <${SENDER_ADDRESS}>`,
+            to: email,
+            subject: DEFAULT_MAIL_SUBJECT,
+            text: `${DEFAULT_MAIL_CONTENT} \n ${email_verification_code}`
+          };
+
+          await mailler.sendMail(mail)
+
+          return await ctx.UserModel.addUser(user,ctx.res);
+        }
+
+
+        else {
+          ctx.res.json({error: 'email already already exsists'})
+        }
       }
     },
 
     async login(_,args,ctx){
-      // 1 get password by user email
-      // 1a if email exist compare password
-      // 1a2 if true / sign token / send token
-      // 1a3 if false / send invalid credentials
-      // 1b if false sen invalid credentials
+
       const {input: {password, email}} = args;
       const fetched = await ctx.UserModel.getUserByEmail(email);
       const user = fetched[0];

@@ -8,8 +8,8 @@ import userRepository from '../../Models/User/UserRepository'
 class Token  {
   constructor(model, accessToken, refreshToken){
     this.userModel = userRepository;
-    this.accessTokenSecret = accessToken || config.jwtAccessToken;
-    this.refreshTokenSecret = refreshToken || config.jwtRefreshToken;
+    this.accessTokenSecret = accessToken || config.JWT_ACCESS_TOKEN;
+    this.refreshTokenSecret = refreshToken || config.JWT_REFRESH_TOKEN;
   }
 
   /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Creating Tokens
