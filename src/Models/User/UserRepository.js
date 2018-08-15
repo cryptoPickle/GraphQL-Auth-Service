@@ -47,6 +47,12 @@ export default {
     return user[0]
   },
 
+  async updateUser(email, userobj){
+    await UserModel.query().patch(userobj).where({email});
+    const user = await this.getUserByEmail((userobj.email) ? userobj.email : email);
+    return user[0]
+  },
+
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // Checks id from outh and email if oauth does not exists but email, updates the
 // user with the oauth logins. If doesnt existst creates a new entry in database
@@ -77,14 +83,14 @@ export default {
           case 'facebook':
             const {facebook_profile_id, facebook_verified} = userinfo;
             await UserModel.query()
-              .patch({facebook_profile_id, facebook_verified})
+              .patch({facebook_profile_id, facebook_verified, email_verified:true})
               .where({email})
             return await this.fetchByIdOrMail(id, model.email);
 
           case 'google':
             const {google_profile_id, google_verified} = userinfo;
             await UserModel.query()
-              .patch({google_profile_id, google_verified})
+              .patch({google_profile_id, google_verified, email_verified:true})
               .where({email})
             return await this.fetchByIdOrMail(id, model.email);
         }
@@ -96,3 +102,5 @@ export default {
     }
   }
 }
+
+

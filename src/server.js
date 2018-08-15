@@ -8,7 +8,7 @@ import config from './config';
 import graphqlHttp from 'express-graphql';
 import schema from './graphql';
 import routes from './Routes';
-import http from 'http';
+import isAuthenticated from './graphql/utils/isLoggedIn';
 
 import UserModel from './Models/User/UserRepository';
 import TokenModel from './Models/Token/TokenRepository';
@@ -41,7 +41,8 @@ app.use('/graphql',graphqlHttp((req,res) => {
       req,
       res,
       UserModel,
-      TokenModel
+      TokenModel,
+      isAuthenticated
     }
   }
 }));

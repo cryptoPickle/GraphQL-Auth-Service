@@ -12,8 +12,8 @@ exports.up = function(knex, Promise) {
 
     tbl.string('name', 60).notNullable();
     tbl.string('surname', 60).notNullable();
-    tbl.integer('age').nullable();
-    tbl.date('birthday');
+
+
     tbl.enu('gender', ['male', 'female', 'other']);
 
     tbl.string('google_profile_id').nullable();

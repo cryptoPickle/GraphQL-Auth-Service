@@ -1,3 +1,4 @@
+import UserModel from '../../Models/User/UserModel';
 import hash from '../../utils/hash';
 import Token from '../../Services/Auth/Token';
 import verificationCode from '../../utils/verificationCodeGenerator';
@@ -5,6 +6,28 @@ import Mail from '../../Services/Mail/Mail';
 import defaultConfig from '../../config';
 
 const {SENDER_ADDRESS, SENDER_NAME, DEFAULT_MAIL_CONTENT, DEFAULT_MAIL_SUBJECT} = defaultConfig;
+
+
+const sendMailGetVerificationCode = async (email) => {
+  try{
+    const mailler = new Mail();
+    const verifyCode = verificationCode();
+    const mail = {
+      from: `${SENDER_NAME} <${SENDER_ADDRESS}>`,
+      to: email,
+      subject: DEFAULT_MAIL_SUBJECT,
+      text: `${DEFAULT_MAIL_CONTENT} \n ${verifyCode}`
+    };
+    await mailler.sendMail(mail)
+    return verifyCode;
+  }catch (e) {
+    console.log(e);
+  }
+};
+
+
+const isPasswordUpdated = async(password) => (password) ? await hash(password) : password;
+
 
 const resolvers = {
   Mutation:{
@@ -19,23 +42,16 @@ const resolvers = {
         const userRecord = await ctx.UserModel.getUserByEmail(email);
 
         if(userRecord.length === 0) {
-          const mailler = new Mail();
-          const email_verification_code = verificationCode();
+
+          const verificationCode = await sendMailGetVerificationCode(email);
 
           const hashedPassword = await hash.password(password);
+
           const user = {
             email, name, surname, age, birthday, gender,
             password: hashedPassword, isCompleted: true,
-            email_verification_code
+            email_verification_code:verificationCode
           };
-          const mail = {
-            from: `${SENDER_NAME} <${SENDER_ADDRESS}>`,
-            to: email,
-            subject: DEFAULT_MAIL_SUBJECT,
-            text: `${DEFAULT_MAIL_CONTENT} \n ${email_verification_code}`
-          };
-
-          await mailler.sendMail(mail)
 
           return await ctx.UserModel.addUser(user,ctx.res);
         }
@@ -52,8 +68,7 @@ const resolvers = {
       const {input: {password, email}} = args;
       const fetched = await ctx.UserModel.getUserByEmail(email);
       const user = fetched[0];
-
-      if(user.length === 0){
+      if(!user){
         ctx.res.json({error: 'Invalid Credentials'});
       }
       else{
@@ -87,8 +102,48 @@ const resolvers = {
           ctx.res.json({error: 'Invalid Code'})
         }
       }
+    },
+
+   updateUser(_,args,ctx){
+      return ctx.isAuthenticated(ctx.req,ctx.res, async() => {
+        const user = ctx.req.user;
+        debugger;
+        const {email,password, name, surname, gender} = args.input;
+        if(email){
+          const userRecord = await ctx.UserModel.getUserByEmail(email);
+          if(userRecord.length === 0){
+            const verificationCode = await sendMailGetVerificationCode(email);
+            const hashedPassword = await isPasswordUpdated(password);
+            return await ctx.UserModel.updateUser(user.email,{
+              email,
+              name,
+              surname,
+              gender,
+              password: hashedPassword,
+              email_verification_code: verificationCode,
+              email_verified: false
+            })
+          }
+          else{
+            ctx.res.json({error: 'Email already exisists'})
+          }
+
+        }
+        else {
+          const hashedPassword = await isPasswordUpdated(password);
+          return ctx.UserModel.updateUser(user.email,{
+            email,
+            name,
+            surname,
+            gender,
+            password: hashedPassword
+          })
+        }
+      });
     }
   }
 }
 
 export default resolvers;
+
+
