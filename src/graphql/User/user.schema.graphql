@@ -18,6 +18,7 @@ type User {
   facebook_profile_id: String
   facebook_verified: Boolean
   isCompleted: Boolean
+  email_verified: Boolean
   isFrozen: Boolean
   created_at: String
   updated_at: String

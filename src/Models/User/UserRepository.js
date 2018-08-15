@@ -27,7 +27,7 @@ export default {
     }
   },
   async getUserByEmail(email){
-    const fields = [...returnedFields, 'password'];
+    const fields = [...returnedFields, 'password', "email_verification_code"];
     return await UserModel.query().where({email}).select(fields);
   },
   async getUserById(id){
@@ -35,9 +35,16 @@ export default {
   },
 
   async fetchByIdOrMail(id, email){
-    return await await UserModel.query().where((id) ? id : false )
+    return await UserModel.query().where((id) ? id : false )
       .orWhere((email) ? {email}: false)
       .select(returnedFields);
+  },
+
+
+  async verifyEmail(email){
+    await UserModel.query().patch({email_verified: true}).where({email});
+    const user =  await this.getUserByEmail(email);
+    return user[0]
   },
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

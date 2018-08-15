@@ -13,8 +13,13 @@ input loginInput {
   password: String!
 }
 
+input verifyEmailInput{
+  email: String!,
+  verificationCode: Int!
+}
 
 type Mutation {
   signUp(input: signupInput!) : User!
   login(input: loginInput!) : Token!
+  verifyEmail(input: verifyEmailInput!): User!
 }

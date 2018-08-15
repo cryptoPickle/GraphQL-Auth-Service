@@ -68,6 +68,25 @@ const resolvers = {
           return ctx.TokenModel.findOrUpdate(user.id,{jwt_access_token,jwt_refresh_token})
         }
       }
+    },
+
+
+    async verifyEmail(_,args,ctx){
+      const {email, verificationCode} = args.input;
+      const user = await ctx.UserModel.getUserByEmail(email);
+      if(user.length === 0){
+        ctx.res.json({error: 'invalid credentials'});
+      }
+      else{
+        const userCode = user[0].email_verification_code;
+        if(userCode === verificationCode){
+          return  await ctx.UserModel.verifyEmail(email);
+
+        }
+        else{
+          ctx.res.json({error: 'Invalid Code'})
+        }
+      }
     }
   }
 }
