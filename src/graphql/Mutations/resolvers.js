@@ -3,62 +3,38 @@ import hash from '../../utils/hash';
 import Token from '../../Services/Auth/Token';
 import verificationCode from '../../utils/verificationCodeGenerator';
 import Mail from '../../Services/Mail/Mail';
-import defaultConfig from '../../config';
 
-const {SENDER_ADDRESS, SENDER_NAME, DEFAULT_MAIL_CONTENT, DEFAULT_MAIL_SUBJECT} = defaultConfig;
+import lib from './lib';
 
-
-const sendMailGetVerificationCode = async (email) => {
-  try{
-    const mailler = new Mail();
-    const verifyCode = verificationCode();
-    const mail = {
-      from: `${SENDER_NAME} <${SENDER_ADDRESS}>`,
-      to: email,
-      subject: DEFAULT_MAIL_SUBJECT,
-      text: `${DEFAULT_MAIL_CONTENT} \n ${verifyCode}`
-    };
-    await mailler.sendMail(mail)
-    return verifyCode;
-  }catch (e) {
-    console.log(e);
-  }
-};
+const {
+  sendMailGetVerificationCode,
+  isPasswordUpdated,
+  signUser
+} = lib;
 
 
-const isPasswordUpdated = async(password) => (password) ? await hash(password) : password;
 
 
 const resolvers = {
   Mutation:{
-    async signUp(_,args,ctx){
+    async signUp(_, args, ctx){
+      const {input:{email}} = args;
+      debugger;
       if(ctx.req.user){
-        throw new Error('Already Signed In')
+        ctx.res.json({error:'Already Signed In'})
       }
 
-
       else{
-        const {input:{password, email, name, surname, age, birthday, gender}} = args;
         const userRecord = await ctx.UserModel.getUserByEmail(email);
 
         if(userRecord.length === 0) {
-
+          debugger
           const verificationCode = await sendMailGetVerificationCode(email);
-
-          const hashedPassword = await hash.password(password);
-
-          const user = {
-            email, name, surname, age, birthday, gender,
-            password: hashedPassword, isCompleted: true,
-            email_verification_code:verificationCode
-          };
-
-          return await ctx.UserModel.addUser(user,ctx.res);
+          return await signUser(ctx.UserModel, args.input, ctx.res, verificationCode);
         }
 
-
         else {
-          ctx.res.json({error: 'email already already exsists'})
+          ctx.res.json({error: 'email already exsists'})
         }
       }
     },
