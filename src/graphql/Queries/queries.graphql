@@ -1,0 +1,5 @@
+type Query {
+  getUserById(id: ID!) : User!
+  getTokens: Token!
+  getProfile: User!
+}

@@ -1,4 +1,10 @@
 .env
-.idea/
-node_modules/
+node_modules
+DS_Store
+yarn-error.log
 yarn.lock
+postgres-data
+.idea
+playground.js
+logs/*
+
