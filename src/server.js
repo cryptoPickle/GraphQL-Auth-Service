@@ -15,47 +15,43 @@ import TokenModel from "./Models/Token/TokenRepository";
 
 const app = express();
 
-import createCluster from "./utils/createCluster";
-
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: HMR
 if (module.hot) {
   module.hot.accept();
 }
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-createCluster(process.env.CLUSTER_COUNT, () => {
-  app.use(bodyParser.json());
+app.use(bodyParser.json());
 
-  app.use(logger(process.env.NODE_ENV));
+app.use(logger(process.env.NODE_ENV));
 
-  app.use(passport.initialize());
+app.use(passport.initialize());
 
-  app.use("/v1", routes);
+app.use("/v1", routes);
 
-  app.use(userTokenValidation(config.JWT_ACCESS_TOKEN));
+app.use(userTokenValidation(config.JWT_ACCESS_TOKEN));
 
-  app.use(
-    "/graphql",
-    graphqlHttp((req, res) => {
-      return {
-        graphiql: true,
-        schema,
-        context: {
-          req,
-          res,
-          UserModel,
-          TokenModel,
-          isAuthenticated
-        }
-      };
-    })
-  );
+app.use(
+  "/graphql",
+  graphqlHttp((req, res) => {
+    return {
+      graphiql: true,
+      schema,
+      context: {
+        req,
+        res,
+        UserModel,
+        TokenModel,
+        isAuthenticated
+      }
+    };
+  })
+);
 
-  app.listen(config.API_PORT, err => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(`🚀Server is ready on ${config.API_PORT}`);
-    }
-  });
+app.listen(config.API_PORT, err => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log(`🚀Server is ready on ${config.API_PORT}`);
+  }
 });
