@@ -23,7 +23,7 @@ module.exports =
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "cef667a3f03a742db92b";
+/******/ 	var hotCurrentHash = "6bd592167949f21b3803";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1102,7 +1102,7 @@ const propertyNameDecider = type => {
 
 };
 
-const returnedFields = ['id', 'email', 'name', 'surname'];exports.default =
+const returnedFields = ['id', 'email', 'name', 'surname', 'isCompleted', 'email_verified'];exports.default =
 
 {
   addUser(userInfo, res) {return _asyncToGenerator(function* () {
@@ -1119,7 +1119,7 @@ const returnedFields = ['id', 'email', 'name', 'surname'];exports.default =
       }})();
   },
   getUserByEmail(email) {return _asyncToGenerator(function* () {
-      const fields = [...returnedFields, 'password'];
+      const fields = [...returnedFields, 'password', "email_verification_code"];
       return yield _UserModel2.default.query().where({ email }).select(fields);})();
   },
   getUserById(id) {return _asyncToGenerator(function* () {
@@ -1127,9 +1127,22 @@ const returnedFields = ['id', 'email', 'name', 'surname'];exports.default =
   },
 
   fetchByIdOrMail(id, email) {return _asyncToGenerator(function* () {
-      return yield yield _UserModel2.default.query().where(id ? id : false).
+      return yield _UserModel2.default.query().where(id ? id : false).
       orWhere(email ? { email } : false).
       select(returnedFields);})();
+  },
+
+
+  verifyEmail(email) {var _this = this;return _asyncToGenerator(function* () {
+      yield _UserModel2.default.query().patch({ email_verified: true }).where({ email });
+      const user = yield _this.getUserByEmail(email);
+      return user[0];})();
+  },
+
+  updateUser(email, userobj) {var _this2 = this;return _asyncToGenerator(function* () {
+      yield _UserModel2.default.query().patch(userobj).where({ email });
+      const user = yield _this2.getUserByEmail(userobj.email ? userobj.email : email);
+      return user[0];})();
   },
 
   // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1138,22 +1151,21 @@ const returnedFields = ['id', 'email', 'name', 'surname'];exports.default =
   // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
-  findOrCreate(model, userinfo, type) {var _this = this;return _asyncToGenerator(function* () {
-      const returnedFields = ['id', 'email', 'name', 'surname'];
+  findOrCreate(model, userinfo, type) {var _this3 = this;return _asyncToGenerator(function* () {
       const id = { [propertyNameDecider(type)]: model[propertyNameDecider(type)] };
 
 
       try {
 
-        const fetched = yield _this.fetchByIdOrMail(id, model.email);
+        const fetched = yield _this3.fetchByIdOrMail(id, model.email);
 
 
         if (fetched.length === 0) {
-          const test = yield _UserModel2.default.query().
+          return yield _UserModel2.default.query().
           insertAndFetch(userinfo).
           where(id).
           pick(returnedFields);
-          return test;
+
         }
 
         if (userinfo.email && fetched[0].email === userinfo.email) {
@@ -1163,16 +1175,16 @@ const returnedFields = ['id', 'email', 'name', 'surname'];exports.default =
             case 'facebook':
               const { facebook_profile_id, facebook_verified } = userinfo;
               yield _UserModel2.default.query().
-              patch({ facebook_profile_id, facebook_verified }).
+              patch({ facebook_profile_id, facebook_verified, email_verified: true }).
               where({ email });
-              return yield _this.fetchByIdOrMail(id, model.email);
+              return yield _this3.fetchByIdOrMail(id, model.email);
 
             case 'google':
               const { google_profile_id, google_verified } = userinfo;
               yield _UserModel2.default.query().
-              patch({ google_profile_id, google_verified }).
+              patch({ google_profile_id, google_verified, email_verified: true }).
               where({ email });
-              return yield _this.fetchByIdOrMail(id, model.email);}
+              return yield _this3.fetchByIdOrMail(id, model.email);}
 
         }
 
@@ -1336,7 +1348,7 @@ class Auth {
   _checkUserValidUser(user) {
 
     const check = this._checkFields(user);
-    if (check) return _extends({}, user, { isCompleted: true });
+    if (check) return _extends({}, user, { isCompleted: true, email_verified: true });
     return user;
   }
 
@@ -1424,8 +1436,8 @@ class FacebookStrategy extends _Auth2.default {
   constructor(clientID, clientSecret, callbackURL, permissions) {
     super();
 
-    this.clientID = clientID || _config2.default.facebookClientID;
-    this.clientSecret = clientSecret || _config2.default.facebookAppSecret;
+    this.clientID = clientID || _config2.default.FACEBOOK_CLIENT_ID;
+    this.clientSecret = clientSecret || _config2.default.FACEBOOK_APP_SECRET;
     this.callbackURL = callbackURL || 'http://localhost:9090/v1/auth/facebook/return';
     this.permissions = permissions || defaultPermissions;
     this._strategy();
@@ -1486,8 +1498,8 @@ var _config = __webpack_require__(/*! ../../../config */ "./src/config/index.js"
 class GoogleStrategy extends _Auth2.default {
   constructor(clientID, clientSecret, callbackURL) {
     super();
-    this.clientID = clientID || _config2.default.googleClientID;
-    this.clientSecret = clientSecret || _config2.default.googleClientSecret;
+    this.clientID = clientID || _config2.default.GOOGLE_CLIENT_ID;
+    this.clientSecret = clientSecret || _config2.default.GOOGLE_CLIENT_SECRET;
     this.callbackURL = callbackURL || 'http://127.0.0.1:9090/v1/auth/google/return';
     this._stategy();
   }
@@ -1550,7 +1562,7 @@ var _config = __webpack_require__(/*! ../../../config */ "./src/config/index.js"
 class JWTStrategy extends _Auth2.default {
   constructor(params, jwtSecret) {
     super();
-    this.jwtSecret = jwtSecret || _config2.default.jwtAccessToken;
+    this.jwtSecret = jwtSecret || _config2.default.JWT_ACCESS_TOKEN;
     this.params = params || {
       secretOrKey: this.jwtSecret,
       jwtFromRequest: _passportJwt.ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -1640,8 +1652,8 @@ var _UserRepository = __webpack_require__(/*! ../../Models/User/UserRepository *
 class Token {
   constructor(model, accessToken, refreshToken) {
     this.userModel = _UserRepository2.default;
-    this.accessTokenSecret = accessToken || _config2.default.jwtAccessToken;
-    this.refreshTokenSecret = refreshToken || _config2.default.jwtRefreshToken;
+    this.accessTokenSecret = accessToken || _config2.default.JWT_ACCESS_TOKEN;
+    this.refreshTokenSecret = refreshToken || _config2.default.JWT_REFRESH_TOKEN;
   }
 
   /// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Creating Tokens
@@ -1778,6 +1790,226 @@ devLogger;
 
 /***/ }),
 
+/***/ "./src/Services/Mail/Clients/Gmail.js":
+/*!********************************************!*\
+  !*** ./src/Services/Mail/Clients/Gmail.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });var _nodemailer = __webpack_require__(/*! nodemailer */ "nodemailer");var _nodemailer2 = _interopRequireDefault(_nodemailer);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+class Gmail {
+  constructor(config) {
+    this.config = config;
+    this.client = this._gmailInit();
+  }
+  _gmailInit() {
+    return _nodemailer2.default.createTransport(this._gmailConfig(this.config));
+  }
+  _gmailConfig(config) {
+    const { user, clientId, clientSecret, refreshToken } = config;
+    return {
+      service: 'gmail',
+      auth: { type: 'oauth2', user, clientId, clientSecret, refreshToken } };
+
+  }}
+;exports.default =
+
+
+Gmail;
+
+/***/ }),
+
+/***/ "./src/Services/Mail/Clients/Mailgun.js":
+/*!**********************************************!*\
+  !*** ./src/Services/Mail/Clients/Mailgun.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });var _nodemailer = __webpack_require__(/*! nodemailer */ "nodemailer");var _nodemailer2 = _interopRequireDefault(_nodemailer);
+var _nodemailerMailgunTransport = __webpack_require__(/*! nodemailer-mailgun-transport */ "nodemailer-mailgun-transport");var _nodemailerMailgunTransport2 = _interopRequireDefault(_nodemailerMailgunTransport);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+class MailGun {
+  constructor(config) {
+    this.config = config;
+    this.client = this._mailgunInit();
+  }
+  _mailgunInit() {
+    return _nodemailer2.default.createTransport((0, _nodemailerMailgunTransport2.default)(this.config));
+  }}exports.default =
+
+
+MailGun;
+
+/***/ }),
+
+/***/ "./src/Services/Mail/Clients/Smtp.js":
+/*!*******************************************!*\
+  !*** ./src/Services/Mail/Clients/Smtp.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });var _nodemailer = __webpack_require__(/*! nodemailer */ "nodemailer");var _nodemailer2 = _interopRequireDefault(_nodemailer);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+class Smtp {
+  constructor(config) {
+    this.config = config;
+    this.client = this._smtpInit();
+  }
+  _smtpInit() {
+    return _nodemailer2.default.createTransport(this._smtpConfig(this.config));
+  }
+  _smtpConfig(config) {
+    const { host, port, secure, user, pass } = config;
+    return { host, port, secure, auth: { user, pass } };
+  }}
+;exports.default =
+
+
+Smtp;
+
+/***/ }),
+
+/***/ "./src/Services/Mail/Clients/index.js":
+/*!********************************************!*\
+  !*** ./src/Services/Mail/Clients/index.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });exports.Smtp = exports.Mailgun = exports.Gmail = undefined;var _Gmail = __webpack_require__(/*! ./Gmail */ "./src/Services/Mail/Clients/Gmail.js");var _Gmail2 = _interopRequireDefault(_Gmail);
+var _Mailgun = __webpack_require__(/*! ./Mailgun */ "./src/Services/Mail/Clients/Mailgun.js");var _Mailgun2 = _interopRequireDefault(_Mailgun);
+var _Smtp = __webpack_require__(/*! ./Smtp */ "./src/Services/Mail/Clients/Smtp.js");var _Smtp2 = _interopRequireDefault(_Smtp);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}exports.
+
+Gmail = _Gmail2.default;exports.
+Mailgun = _Mailgun2.default;exports.
+Smtp = _Smtp2.default;
+
+/***/ }),
+
+/***/ "./src/Services/Mail/Mail.js":
+/*!***********************************!*\
+  !*** ./src/Services/Mail/Mail.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });var _Clients = __webpack_require__(/*! ./Clients */ "./src/Services/Mail/Clients/index.js");
+var _config = __webpack_require__(/*! ../../config */ "./src/config/index.js");var _config2 = _interopRequireDefault(_config);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+
+const {
+  DEFAULT_MAIL_SERVICE,
+  MG_API_KEY,
+  MG_DOMAIN,
+  GMAIL_USER,
+  GMAIL_CLIENT_ID,
+  GMAIL_CLIENT_SECRET,
+  GMAIL_REFRESH_TOKEN,
+  SMTP_HOST,
+  SMTP_PORT,
+  SMTP_SECURE,
+  SMTP_USER,
+  SMTP_USER_PASSWORD } =
+
+_config2.default;
+
+const defaultConfig = {
+  service: DEFAULT_MAIL_SERVICE,
+  mgApiKey: MG_API_KEY,
+  mgDomain: MG_DOMAIN,
+  googleUser: GMAIL_USER,
+  googleClientId: GMAIL_CLIENT_ID,
+  googleClientSecret: GMAIL_CLIENT_SECRET,
+  googleRefreshToken: GMAIL_REFRESH_TOKEN,
+  smptpHost: SMTP_HOST,
+  smtpPort: SMTP_PORT,
+  smtpSecure: SMTP_SECURE,
+  smtpUser: SMTP_USER,
+  smtpPass: SMTP_USER_PASSWORD };
+
+
+class Mail {
+  constructor(config) {
+    this.config = config || defaultConfig;
+    const {
+      service,
+      mgApiKey,
+      mgDomain,
+      googleUser,
+      googleClientId,
+      googleClientSecret,
+      googleRefreshToken,
+      smptpHost,
+      smtpPort,
+      smtpSecure,
+      smtpUser,
+      smtpPass } =
+    this.config;
+
+
+
+    //// Configs :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    this.service = service;
+    this.mailgunConfig = {
+      auth: {
+        api_key: mgApiKey,
+        domain: mgDomain } };
+
+
+    this.gmailConfig = {
+      user: googleUser,
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+      refreshToken: googleRefreshToken };
+
+    this.smptpConfig = {
+      host: smptpHost,
+      port: smtpPort,
+      secure: smtpSecure,
+      user: smtpUser,
+      pass: smtpPass };
+
+  }
+
+  _decideClient(type) {
+    switch (type) {
+      case 'gmail':
+        const gmail = new _Clients.Gmail(this.gmailConfig);
+        return gmail.client;
+      case 'mailgun':
+        const mailgun = new _Clients.Mailgun(this.mailgunConfig);
+        return mailgun.client;
+      case 'smtp':
+        const smtp = new _Clients.Smtp(this.smptpConfig);
+        return smtp.client;}
+
+  }
+
+  sendMail(mail) {
+    const { from, to, subject, text, html } = mail;
+    const client = this._decideClient(this.service);
+    return new Promise((resolve, reject) => {
+      client.sendMail({ from, to, subject, text, html }, (err, info) => {
+        if (err) return reject(err);
+        return resolve(info);
+      });
+    });
+  }}exports.default =
+
+
+Mail;
+
+/***/ }),
+
 /***/ "./src/config/index.js":
 /*!*****************************!*\
   !*** ./src/config/index.js ***!
@@ -1793,18 +2025,35 @@ dotEnv.load();
 const isDevelopment = "development" === 'development';
 
 const config = {
-  facebookClientID: "239629546873627",
-  facebookAppSecret: "38ff2621164baeb6a3d1f544f7581ac5",
-  googleClientID: "97042491529-kng3n1j51qbbpfpgehutvj9s075u9843.apps.googleusercontent.com",
-  googleClientSecret: "U3fqzCk-wRJQifbv7RkcJdpe",
-  jwtAccessToken: "secret",
-  jwtRefreshToken: "secret2",
-  apiPort: "9090",
+  FACEBOOK_CLIENT_ID: "239629546873627",
+  FACEBOOK_APP_SECRET: "38ff2621164baeb6a3d1f544f7581ac5",
+  GOOGLE_CLIENT_ID: "97042491529-kng3n1j51qbbpfpgehutvj9s075u9843.apps.googleusercontent.com",
+  GOOGLE_CLIENT_SECRET: "U3fqzCk-wRJQifbv7RkcJdpe",
+  JWT_ACCESS_TOKEN: "secret",
+  JWT_REFRESH_TOKEN: "secret2",
+  API_PORT: "9090",
   POSTGRES_HOST: "127.0.0.1",
   POSTGRES_PORT: "5432",
   POSTGRES_USER: "postgres",
   POSTGRES_PASSWORD: "",
-  POSTGRES_DB: "auth" };
+  POSTGRES_DB: "auth",
+  DEFAULT_MAIL_SERVICE: "mailgun",
+  MG_API_KEY: "bd556720efd3e6b05d5bd6fd90279df4-7efe8d73-4822bef6",
+  MG_DOMAIN: "mg.recursive.online",
+  GMAIL_USER: "halilibrahimirmak@gmail.com",
+  GMAIL_CLIENT_ID: "1015149487194-48062ui2js1rn0dsgsc3a4ut151i1qk3.apps.googleusercontent.com",
+  GMAIL_CLIENT_SECRET: "6tbxq3rxi9Cn64LIS3CABCd7",
+  GMAIL_REFRESH_TOKEN: "1/_6oQgzq6OhbHY7E50HP0W-yT7FeSJ2G0k3bwfw7O-to",
+  SMTP_HOST: "",
+  SMTP_PORT: "",
+  SMTP_SECURE: "",
+  SMTP_USER: "",
+  SMTP_USER_PASSWORD: "",
+  SENDER_NAME: "GQL AUTH SERVICE",
+  SENDER_ADDRESS: "donotreply@recursive.online",
+  DEFAULT_MAIL_SUBJECT: "Verify information",
+  DEFAULT_MAIL_CONTENT: "Please use 6 digit code to verify your account from following link." };
+
 
 
 module.exports = config;
@@ -1895,6 +2144,68 @@ var _path = __webpack_require__(/*! path */ "path");var _path2 = _interopRequire
 
 /***/ }),
 
+/***/ "./src/graphql/Mutations/lib/index.js":
+/*!********************************************!*\
+  !*** ./src/graphql/Mutations/lib/index.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });var _Mail = __webpack_require__(/*! ../../../Services/Mail/Mail */ "./src/Services/Mail/Mail.js");var _Mail2 = _interopRequireDefault(_Mail);
+var _hash = __webpack_require__(/*! ../../../utils/hash */ "./src/utils/hash.js");var _hash2 = _interopRequireDefault(_hash);
+var _verificationCodeGenerator = __webpack_require__(/*! ../../../utils/verificationCodeGenerator */ "./src/utils/verificationCodeGenerator.js");var _verificationCodeGenerator2 = _interopRequireDefault(_verificationCodeGenerator);
+var _config = __webpack_require__(/*! ../../../config */ "./src/config/index.js");var _config2 = _interopRequireDefault(_config);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _asyncToGenerator(fn) {return function () {var gen = fn.apply(this, arguments);return new Promise(function (resolve, reject) {function step(key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {return Promise.resolve(value).then(function (value) {step("next", value);}, function (err) {step("throw", err);});}}return step("next");});};}
+
+
+
+const { SENDER_ADDRESS, SENDER_NAME, DEFAULT_MAIL_CONTENT, DEFAULT_MAIL_SUBJECT } = _config2.default;
+
+const lib = {
+  sendMailGetVerificationCode(email) {return _asyncToGenerator(function* () {
+      try {
+        const mailler = new _Mail2.default();
+        const verifyCode = (0, _verificationCodeGenerator2.default)();
+        const mail = {
+          from: `${SENDER_NAME} <${SENDER_ADDRESS}>`,
+          to: email,
+          subject: DEFAULT_MAIL_SUBJECT,
+          text: `${DEFAULT_MAIL_CONTENT} \n ${verifyCode}` };
+
+        yield mailler.sendMail(mail);
+        return verifyCode;
+      } catch (e) {
+        console.log(e);
+      }})();
+  },
+
+  // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+  isPasswordUpdated(password) {return _asyncToGenerator(function* () {
+      return password ? yield (0, _hash2.default)(password) : password;})();
+  },
+
+  // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+  signUser(model, userObj, res, verificationCode) {return _asyncToGenerator(function* () {
+      const { name, email, surname, age, birthday, gender, password } = userObj;
+
+      const hashedPassword = yield _hash2.default.password(password);
+
+      const user = {
+        email, name, surname, age, birthday, gender,
+        password: hashedPassword, isCompleted: true,
+        email_verification_code: verificationCode };
+
+
+      return yield model.addUser(user, res);})();
+  } };exports.default =
+
+
+lib;
+
+/***/ }),
+
 /***/ "./src/graphql/Mutations/resolvers.js":
 /*!********************************************!*\
   !*** ./src/graphql/Mutations/resolvers.js ***!
@@ -1903,36 +2214,53 @@ var _path = __webpack_require__(/*! path */ "path");var _path2 = _interopRequire
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });var _hash = __webpack_require__(/*! ../../utils/hash */ "./src/utils/hash.js");var _hash2 = _interopRequireDefault(_hash);
-var _Token = __webpack_require__(/*! ../../Services/Auth/Token */ "./src/Services/Auth/Token.js");var _Token2 = _interopRequireDefault(_Token);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _asyncToGenerator(fn) {return function () {var gen = fn.apply(this, arguments);return new Promise(function (resolve, reject) {function step(key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {return Promise.resolve(value).then(function (value) {step("next", value);}, function (err) {step("throw", err);});}}return step("next");});};}
+Object.defineProperty(exports, "__esModule", { value: true });var _UserModel = __webpack_require__(/*! ../../Models/User/UserModel */ "./src/Models/User/UserModel.js");var _UserModel2 = _interopRequireDefault(_UserModel);
+var _hash = __webpack_require__(/*! ../../utils/hash */ "./src/utils/hash.js");var _hash2 = _interopRequireDefault(_hash);
+var _Token = __webpack_require__(/*! ../../Services/Auth/Token */ "./src/Services/Auth/Token.js");var _Token2 = _interopRequireDefault(_Token);
+var _verificationCodeGenerator = __webpack_require__(/*! ../../utils/verificationCodeGenerator */ "./src/utils/verificationCodeGenerator.js");var _verificationCodeGenerator2 = _interopRequireDefault(_verificationCodeGenerator);
+var _Mail = __webpack_require__(/*! ../../Services/Mail/Mail */ "./src/Services/Mail/Mail.js");var _Mail2 = _interopRequireDefault(_Mail);
+
+var _lib = __webpack_require__(/*! ./lib */ "./src/graphql/Mutations/lib/index.js");var _lib2 = _interopRequireDefault(_lib);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _asyncToGenerator(fn) {return function () {var gen = fn.apply(this, arguments);return new Promise(function (resolve, reject) {function step(key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {return Promise.resolve(value).then(function (value) {step("next", value);}, function (err) {step("throw", err);});}}return step("next");});};}
+
+const {
+  sendMailGetVerificationCode,
+  isPasswordUpdated,
+  signUser } =
+_lib2.default;
+
+
+
+
 const resolvers = {
   Mutation: {
     signUp(_, args, ctx) {return _asyncToGenerator(function* () {
+        const { input: { email } } = args;
+        debugger;
         if (ctx.req.user) {
-          throw new Error('Already Signed In');
+          ctx.res.json({ error: 'Already Signed In' });
         } else
-        {
-          const { input: { password, email, name, surname, age, birthday, gender } } = args;
-          const hashedPassword = yield _hash2.default.password(password);
-          const user = {
-            email, name, surname, age, birthday, gender,
-            password: hashedPassword, isCompleted: true };
 
-          return yield ctx.UserModel.addUser(user, ctx.res);
+        {
+          const userRecord = yield ctx.UserModel.getUserByEmail(email);
+
+          if (userRecord.length === 0) {
+            debugger;
+            const verificationCode = yield sendMailGetVerificationCode(email);
+            return yield signUser(ctx.UserModel, args.input, ctx.res, verificationCode);
+          } else
+
+          {
+            ctx.res.json({ error: 'email already exsists' });
+          }
         }})();
     },
 
     login(_, args, ctx) {return _asyncToGenerator(function* () {
-        // 1 get password by user email
-        // 1a if email exist compare password
-        // 1a2 if true / sign token / send token
-        // 1a3 if false / send invalid credentials
-        // 1b if false sen invalid credentials
+
         const { input: { password, email } } = args;
         const fetched = yield ctx.UserModel.getUserByEmail(email);
         const user = fetched[0];
-
-        if (user.length === 0) {
+        if (!user) {
           ctx.res.json({ error: 'Invalid Credentials' });
         } else
         {
@@ -1947,6 +2275,63 @@ const resolvers = {
             return ctx.TokenModel.findOrUpdate(user.id, { jwt_access_token, jwt_refresh_token });
           }
         }})();
+    },
+
+
+    verifyEmail(_, args, ctx) {return _asyncToGenerator(function* () {
+        const { email, verificationCode } = args.input;
+        const user = yield ctx.UserModel.getUserByEmail(email);
+        if (user.length === 0) {
+          ctx.res.json({ error: 'invalid credentials' });
+        } else
+        {
+          const userCode = user[0].email_verification_code;
+          if (userCode === verificationCode) {
+            return yield ctx.UserModel.verifyEmail(email);
+
+          } else
+          {
+            ctx.res.json({ error: 'Invalid Code' });
+          }
+        }})();
+    },
+
+    updateUser(_, args, ctx) {
+      return ctx.isAuthenticated(ctx.req, ctx.res, _asyncToGenerator(function* () {
+        const user = ctx.req.user;
+        debugger;
+        const { email, password, name, surname, gender } = args.input;
+        if (email) {
+          const userRecord = yield ctx.UserModel.getUserByEmail(email);
+          if (userRecord.length === 0) {
+            const verificationCode = yield sendMailGetVerificationCode(email);
+            const hashedPassword = yield isPasswordUpdated(password);
+            return yield ctx.UserModel.updateUser(user.email, {
+              email,
+              name,
+              surname,
+              gender,
+              password: hashedPassword,
+              email_verification_code: verificationCode,
+              email_verified: false });
+
+          } else
+          {
+            ctx.res.json({ error: 'Email already exisists' });
+          }
+
+        } else
+        {
+          const hashedPassword = yield isPasswordUpdated(password);
+          return ctx.UserModel.updateUser(user.email, {
+            email,
+            name,
+            surname,
+            gender,
+            password: hashedPassword });
+
+        }
+      }));
     } } };exports.default =
 
 
@@ -1988,14 +2373,14 @@ const resolvers = {
   Query: {
 
     getTokens(_, args, ctx) {return _asyncToGenerator(function* () {
-        return (0, _isLoggedIn2.default)(ctx.req, _asyncToGenerator(function* () {
+        return ctx.isAuthenticated(ctx.req, ctx.res, _asyncToGenerator(function* () {
           const { id } = ctx.req.user;
           const tokens = yield ctx.TokenModel.getTokens(id);
           return tokens[0];
         }));})();
     },
     getProfile(_, args, ctx) {
-      return (0, _isLoggedIn2.default)(ctx.req, () => ctx.req.user);
+      return ctx.isAuthenticated(ctx.req, ctx.res, () => ctx.req.user);
     } } };exports.default =
 
 
@@ -2099,16 +2484,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // ::::::::::::::::::::::::::::::: GraphQl Middleware To Check If User Logged In
 
 
-const isLoggedIn = (req, cb) => {
-  if (req.user && req.user.isCompleted) {
+const isLoggedIn = (req, res, cb) => {
+  if (req.user && req.user.isCompleted && req.user.email_verified) {
 
     return cb();
   } else
 
   {
-    if (!req.user.isCompleted) throw new Error('Please Complete Registration');else
+    if (req.user) {
+      if (!req.user.isCompleted) res.json({ error: 'Please Complete Registration' });else
+      if (!req.user.email_verified) res.json({ error: 'Please Verify Your Mail' });
+    } else
     {
-      throw new Error('Please Login');
+      res.json({ error: 'Please Login' });
     }
   }
 };exports.default =
@@ -2179,48 +2567,81 @@ var _config = __webpack_require__(/*! ./config */ "./src/config/index.js");var _
 var _expressGraphql = __webpack_require__(/*! express-graphql */ "express-graphql");var _expressGraphql2 = _interopRequireDefault(_expressGraphql);
 var _graphql = __webpack_require__(/*! ./graphql */ "./src/graphql/index.js");var _graphql2 = _interopRequireDefault(_graphql);
 var _Routes = __webpack_require__(/*! ./Routes */ "./src/Routes/index.js");var _Routes2 = _interopRequireDefault(_Routes);
-var _http = __webpack_require__(/*! http */ "http");var _http2 = _interopRequireDefault(_http);
+var _isLoggedIn = __webpack_require__(/*! ./graphql/utils/isLoggedIn */ "./src/graphql/utils/isLoggedIn.js");var _isLoggedIn2 = _interopRequireDefault(_isLoggedIn);
 
 var _UserRepository = __webpack_require__(/*! ./Models/User/UserRepository */ "./src/Models/User/UserRepository.js");var _UserRepository2 = _interopRequireDefault(_UserRepository);
-var _TokenRepository = __webpack_require__(/*! ./Models/Token/TokenRepository */ "./src/Models/Token/TokenRepository.js");var _TokenRepository2 = _interopRequireDefault(_TokenRepository);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+var _TokenRepository = __webpack_require__(/*! ./Models/Token/TokenRepository */ "./src/Models/Token/TokenRepository.js");var _TokenRepository2 = _interopRequireDefault(_TokenRepository);
 
-const app = (0, _express2.default)();
 
+
+var _createCluster = __webpack_require__(/*! ./utils/createCluster */ "./src/utils/createCluster.js");var _createCluster2 = _interopRequireDefault(_createCluster);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}const app = (0, _express2.default)();
 
 // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: HMR
 if (true) {
   module.hot.accept();
 }
-// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-app.use(_bodyParser2.default.json());
+(0, _createCluster2.default)(Object({"NODE_ENV":"development"}).CLUSTER_COUNT, () => {
+  app.use(_bodyParser2.default.json());
 
-app.use((0, _Logger2.default)("development"));
+  app.use((0, _Logger2.default)("development"));
 
-app.use(_passport2.default.initialize());
+  app.use(_passport2.default.initialize());
+
+  app.use("/v1", _Routes2.default);
+
+  app.use((0, _token2.default)(_config2.default.JWT_ACCESS_TOKEN));
+
+  app.use(
+  "/graphql",
+  (0, _expressGraphql2.default)((req, res) => {
+    return {
+      graphiql: true,
+      schema: _graphql2.default,
+      context: {
+        req,
+        res,
+        UserModel: _UserRepository2.default,
+        TokenModel: _TokenRepository2.default,
+        isAuthenticated: _isLoggedIn2.default } };
 
 
-app.use('/v1', _Routes2.default);
-
-app.use((0, _token2.default)(_config2.default.jwtAccessToken));
-
-app.use('/graphql', (0, _expressGraphql2.default)((req, res) => {
-  return {
-    graphiql: true,
-    schema: _graphql2.default,
-    context: {
-      req,
-      res,
-      UserModel: _UserRepository2.default,
-      TokenModel: _TokenRepository2.default } };
+  }));
 
 
-}));
-
-app.listen(_config2.default.apiPort, err => {
-  if (err) {console.log(err);} else
-  {console.log(`🚀Server is ready on ${_config2.default.apiPort}`);};
+  app.listen(_config2.default.API_PORT, err => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(`🚀Server is ready on ${_config2.default.API_PORT}`);
+    }
+  });
 });
+
+/***/ }),
+
+/***/ "./src/utils/createCluster.js":
+/*!************************************!*\
+  !*** ./src/utils/createCluster.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });var _cluster = __webpack_require__(/*! cluster */ "cluster");var _cluster2 = _interopRequireDefault(_cluster);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+const createCluster = (count = 1, cb) => {
+  if (_cluster2.default.isMaster) {
+    for (let i = 0; i < count; i++) {
+      _cluster2.default.fork();
+    }
+  } else {
+    cb();
+  }
+};exports.default =
+
+createCluster;
 
 /***/ }),
 
@@ -2263,6 +2684,18 @@ hash.compare = (userpassword, hash) => {
 
 
 hash;
+
+/***/ }),
+
+/***/ "./src/utils/verificationCodeGenerator.js":
+/*!************************************************!*\
+  !*** ./src/utils/verificationCodeGenerator.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = () => Math.floor(100000 + Math.random() * 999999);
 
 /***/ }),
 
@@ -2310,6 +2743,17 @@ module.exports = require("bcryptjs");
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
+
+/***/ }),
+
+/***/ "cluster":
+/*!**************************!*\
+  !*** external "cluster" ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("cluster");
 
 /***/ }),
 
@@ -2368,17 +2812,6 @@ module.exports = require("graphql-tools");
 
 /***/ }),
 
-/***/ "http":
-/*!***********************!*\
-  !*** external "http" ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("http");
-
-/***/ }),
-
 /***/ "jsonwebtoken":
 /*!*******************************!*\
   !*** external "jsonwebtoken" ***!
@@ -2420,6 +2853,28 @@ module.exports = require("moment");
 /***/ (function(module, exports) {
 
 module.exports = require("morgan");
+
+/***/ }),
+
+/***/ "nodemailer":
+/*!*****************************!*\
+  !*** external "nodemailer" ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("nodemailer");
+
+/***/ }),
+
+/***/ "nodemailer-mailgun-transport":
+/*!***********************************************!*\
+  !*** external "nodemailer-mailgun-transport" ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("nodemailer-mailgun-transport");
 
 /***/ }),
 

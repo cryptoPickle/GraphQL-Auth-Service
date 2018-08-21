@@ -3,8 +3,6 @@ input signupInput {
   password: String!
   name: String!
   surname: String!
-  age: Int
-  birthday: String
   gender: Gender
 }
 
@@ -13,8 +11,23 @@ input loginInput {
   password: String!
 }
 
+input verifyEmailInput{
+  email: String!,
+  verificationCode: Int!
+}
+
+input updateUserInput {
+  email: String,
+  password: String,
+  name: String,
+  surname: String,
+  gender: Gender
+
+}
 
 type Mutation {
   signUp(input: signupInput!) : User!
   login(input: loginInput!) : Token!
+  verifyEmail(input: verifyEmailInput!): User!
+  updateUser(input: updateUserInput! ) :User!
 }
